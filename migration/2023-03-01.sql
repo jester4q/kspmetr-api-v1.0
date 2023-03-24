@@ -1,0 +1,1 @@
+ALTER TABLE `sellers` CHANGE `code` `code` VARCHAR(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL;
