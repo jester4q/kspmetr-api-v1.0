@@ -79,10 +79,8 @@ export class ProductController {
     })
     async add(@Body() product: AddProductRequestDTO): Promise<TProduct> {
         try {
-            console.log('ADD', product);
             const model = new AddProductModel(product);
             const result = await this.productService.add(model);
-            console.log('RESULT', result);
             return result;
         } catch (e) {
             throw new InternalServerErrorException(
@@ -111,7 +109,7 @@ export class ProductController {
     }
 
     private get3LevelCategories(category: TCategory): number[] {
-        if (category.level == 3) {
+        if (!category.children || !category.children.length) {
             return [category.id];
         }
         const result = [];

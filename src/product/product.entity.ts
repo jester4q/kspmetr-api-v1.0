@@ -1,5 +1,6 @@
 import { json } from 'stream/consumers';
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
+import { TCategoryPath } from './product.types';
 
 @Entity('products')
 export class Product extends BaseEntity {
@@ -55,7 +56,7 @@ export class Product extends BaseEntity {
     attempt: number;
 
     @Column({ type: 'json' })
-    categories: { level1: number; level2: number; level3: number };
+    categories: TCategoryPath;
 
     @Column()
     categoryId: number;

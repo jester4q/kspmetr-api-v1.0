@@ -3,6 +3,7 @@ import {
     ProductSellerDTO,
     AddProductRequestDTO,
 } from './product.dto';
+import { TCategoryPath } from './product.types';
 
 export class ProductModel {
     constructor(private data: SaveProductRequestDTO) {}
@@ -143,15 +144,12 @@ export class AddProductModel {
         return this.data.title;
     }
 
-    public get cartegoryPath(): {
-        level1: number;
-        level2: number;
-        level3: number;
-    } {
+    public get cartegoryPath(): TCategoryPath {
         return this.data.categories;
     }
 
     public get categoryId(): number {
-        return this.cartegoryPath.level3;
+        const path = this.cartegoryPath;
+        return path.level4 || path.level3 || path.level2 || 0;
     }
 }

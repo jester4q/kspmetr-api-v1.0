@@ -72,7 +72,6 @@ export class CategoryController {
         @Param('parentId') parentId: number,
         @Body() req: SaveCategoriesRequestDTO,
     ): Promise<{}> {
-        console.log('save', req);
         try {
             const parent = this.categoryService.fetchOne(parentId);
         } catch (e) {

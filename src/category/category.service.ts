@@ -21,6 +21,7 @@ export class CategoryService {
         try {
             const parent = await this.categoryRepository.findOneBy({
                 id: parentCategoryId,
+                status: 1,
             });
             if (parent && depth != 0) {
                 await this.fetchTreeBranch(parent, depth - 1);
@@ -36,6 +37,7 @@ export class CategoryService {
         try {
             const category = await this.categoryRepository.findOneBy({
                 id: categoryId,
+                status: 1,
             });
             return this.toCategory(category);
         } catch (error) {
@@ -53,7 +55,6 @@ export class CategoryService {
             throw new Error('There is no category with id = ' + parentId);
         }
         try {
-            console.log('save categories', categories);
             const old = await this.categoryRepository.findBy({
                 parentCategoryId: parentId,
             });
@@ -65,6 +66,7 @@ export class CategoryService {
                 );
                 if (hasItem && hasItem.name != newItem.name) {
                     hasItem.name = newItem.name;
+                    hasItem.status = 1;
                     await hasItem.save();
                 }
                 if (!hasItem) {
@@ -73,6 +75,7 @@ export class CategoryService {
                         level: parent.level + 1,
                         name: newItem.name,
                         url: newItem.url,
+                        status: 1,
                     });
                     await category.save();
                 }
@@ -84,7 +87,9 @@ export class CategoryService {
                     (newItem) => newItem.url == oldItem.url,
                 );
                 if (!hasItem) {
-                    await oldItem.remove();
+                    console.log('NOT HAS', oldItem.id);
+                    oldItem.status = 0;
+                    await oldItem.save();
                 }
             }
         } catch (error) {
@@ -111,6 +116,7 @@ export class CategoryService {
     protected async fetchTreeBranch(category: Category, depth: number) {
         category.children = await this.categoryRepository.findBy({
             parentCategoryId: category.id,
+            status: 1,
         });
         if (category.children && category.children.length && depth) {
             const promises = [];

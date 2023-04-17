@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsNotEmpty, IsUrl, Max, Min } from 'class-validator';
+import { TCategoryPath } from './product.types';
 
 export class ProductDto {
     @ApiProperty({
@@ -117,7 +118,7 @@ export class AddProductRequestDTO {
     @ApiProperty({
         description: 'Product category',
     })
-    categories: { level1: number; level2: number; level3: number };
+    categories: TCategoryPath;
 }
 
 export class SaveProductRequestDTO {

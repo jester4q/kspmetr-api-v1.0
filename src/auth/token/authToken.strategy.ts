@@ -19,7 +19,6 @@ class Strategy extends passport.Strategy {
         this.tokenService
             .verify(token)
             .then((result) => {
-                console.log('authenticate', result);
                 if (!result) {
                     this.fail(result);
                 } else {

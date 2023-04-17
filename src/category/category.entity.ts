@@ -28,6 +28,9 @@ export class Category extends BaseEntity {
     @Column({ length: 512 })
     url: string;
 
+    @Column()
+    status: number;
+
     @ManyToOne((type) => Category, (category) => category.children)
     @JoinColumn({ name: 'parentCategoryId' })
     parent: Category;

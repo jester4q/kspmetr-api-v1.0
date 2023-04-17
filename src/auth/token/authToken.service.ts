@@ -17,7 +17,6 @@ export class AuthTokensService {
     ) {}
 
     public async verify(token: string): Promise<TAuth | null> {
-        console.log('verify', token);
         if (!token) {
             throw new Error('Access token is not defined');
         }
