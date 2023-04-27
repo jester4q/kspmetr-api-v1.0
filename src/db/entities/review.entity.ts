@@ -22,4 +22,7 @@ export class ProductReview extends BaseEntity {
 
     @Column({ type: 'date' })
     date: Date;
+
+    @Column()
+    sessionId: number;
 }

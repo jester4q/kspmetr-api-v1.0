@@ -16,6 +16,9 @@ export class Seller extends BaseEntity {
 
     @Column({ type: 'datetime' })
     createdAt: Date;
+
+    @Column()
+    sessionId: number;
 }
 
 @Entity('productsToSellers')

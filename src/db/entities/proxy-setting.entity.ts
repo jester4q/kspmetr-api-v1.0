@@ -1,5 +1,4 @@
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
-import { ProxySettingDTO } from './proxy-setting.dto';
 
 @Entity('proxy')
 export class ProxySetting extends BaseEntity {

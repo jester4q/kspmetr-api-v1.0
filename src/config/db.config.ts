@@ -1,19 +1,22 @@
-let conf;
-
-type DBConf = {
+import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
+type TDBConfig = {
     database: string;
-    type: 'mysql' | 'mariadb';
-    host: string;
-    port: number;
     username: string;
     password: string;
 };
+let conf: MysqlConnectionOptions;
 
-export default (): { default: DBConf } => {
+export default (): MysqlConnectionOptions => {
     if (!conf) {
-        const DB_ACCESS = JSON.parse(process.env.DB_ACCESS);
+        const DB_ACCESS: TDBConfig = JSON.parse(process.env.DB_ACCESS);
         conf = {
-            default: DB_ACCESS,
+            ...DB_ACCESS,
+            type: 'mysql',
+            host: 'localhost',
+            port: 3306,
+            synchronize: false,
+            logger: 'file',
+            logging: ['query', 'error'],
         };
     }
     return conf;

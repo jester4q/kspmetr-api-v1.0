@@ -5,10 +5,12 @@ import { ValidationPipe } from '@nestjs/common/pipes';
 import { AppModule } from './app.module';
 import appConfig from './config/app.config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { useContainer } from 'class-validator';
 
 async function bootstrap() {
     const port = appConfig().appPort || 3000;
     const app = await NestFactory.create(AppModule, { cors: true });
+    useContainer(app.select(AppModule), { fallbackOnErrors: true });
     app.useGlobalPipes(new ValidationPipe());
     const config = new DocumentBuilder()
         .setTitle('SkyMetric: REST Api')

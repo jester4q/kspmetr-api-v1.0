@@ -5,10 +5,7 @@ import {
     BaseEntity,
     ManyToOne,
     OneToMany,
-    TreeParent,
-    JoinTable,
     JoinColumn,
-    Tree,
 } from 'typeorm';
 
 @Entity('categories')

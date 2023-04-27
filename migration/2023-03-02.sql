@@ -29,3 +29,18 @@ INSERT INTO `categories` (`id`, `level`, `parentCategoryId`, `name`, `url`) VALU
 (NULL, '2', '44', 'Климатическая техника', 'https://kaspi.kz/shop/nur-sultan/c/climate%20equipment/?q='),
 (NULL, '2', '44', 'Малая техника для дома', 'https://kaspi.kz/shop/nur-sultan/c/small%20home%20appliances/?q='),
 (NULL, '2', '44', 'Торговые автоматы', 'https://kaspi.kz/shop/nur-sultan/c/vending%20machines/?q=');
+
+
+
+INSERT INTO `categories` (`id`, `level`, `parentCategoryId`, `name`, `url`) VALUES (NULL, '1', '0', 'Компьютеры', 'https://kaspi.kz/shop/nur-sultan/c/computers/');
+INSERT INTO `categories` (`id`, `level`, `parentCategoryId`, `name`, `url`) VALUES 
+(NULL, '2', '137', 'Периферия', 'https://kaspi.kz/shop/nur-sultan/c/peripherals/?q='), 
+(NULL, '2', '137', 'Комплектующие', 'https://kaspi.kz/shop/nur-sultan/c/hardware/?q='),
+(NULL, '2', '137', 'Ноутбуки и аксессуары', 'https://kaspi.kz/shop/nur-sultan/c/notebooks%20and%20accessories/?q='),
+(NULL, '2', '137', 'Планшеты и аксессуары', 'https://kaspi.kz/shop/nur-sultan/c/tablets%20and%20accessories/?q='),
+(NULL, '2', '137', 'Сетевое оборудование', 'https://kaspi.kz/shop/nur-sultan/c/network%20hardware/?q='),
+(NULL, '2', '137', 'Оргтехника и расходные материалы', 'https://kaspi.kz/shop/nur-sultan/c/office%20equipment%20and%20consumables/?q='),
+(NULL, '2', '137', 'Настольные компьютеры', 'https://kaspi.kz/shop/nur-sultan/c/desktop%20computers/?q='),
+(NULL, '2', '137', 'Электронное оборудование для торговли', 'https://kaspi.kz/shop/nur-sultan/c/electronic%20equipment%20for%20trade/?q='),
+(NULL, '2', '137', 'IP-телефония и конференц-оборудование', 'https://kaspi.kz/shop/nur-sultan/c/ip%20telephony%20and%20conference%20equipment/?q='),
+(NULL, '2', '137', 'Программное обеспечение', 'https://kaspi.kz/shop/nur-sultan/c/computer%20software/?q=');

@@ -1,8 +1,8 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { TAuth } from './authToken.service';
+import { TSessionUser } from './authToken.service';
 
 export const SessionUser = createParamDecorator(
-    (data: any, ctx: ExecutionContext): TAuth => {
+    (data: any, ctx: ExecutionContext): TSessionUser => {
         const request = ctx.switchToHttp().getRequest();
         return request.user;
     },

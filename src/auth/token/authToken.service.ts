@@ -1,41 +1,89 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
 
-import { AuthToken } from '../entities/authToken.entity';
+import appConfig from '../../config/app.config';
+import { UserRoleEnum } from '../../user/types';
+import { AuthSession, User } from '../../db/entities';
 
-export type TAuth = {
-    id: number;
-    name: string;
+export type TSessionUser = {
+    userId: number;
+    sessionId: number;
+    email: string;
+    roles: UserRoleEnum[];
 };
 
 @Injectable()
 export class AuthTokensService {
     public constructor(
-        @InjectRepository(AuthToken)
-        private authTokenRepository: Repository<AuthToken>,
+        @InjectRepository(AuthSession)
+        private sessionRepository: Repository<AuthSession>,
+        @InjectRepository(User)
+        private userRepository: Repository<User>,
+        private jwt: JwtService,
     ) {}
 
-    public async verify(token: string): Promise<TAuth | null> {
-        if (!token) {
-            throw new Error('Access token is not defined');
-        }
-        try {
-            const auth = await this.authTokenRepository.findOne({
-                where: { token: token, active: true },
-            });
-            if (auth) {
-                auth.lastAcessDate = new Date();
-                auth.save();
-                return {
-                    id: auth.id,
-                    name: auth.name,
-                };
-            }
-        } catch ($error) {
-            console.log($error);
-        }
+    public async sign(user: User): Promise<string> {
+        const session = await this.createSession(user.id);
+        const token = this.jwt.sign(
+            {
+                sub: session.id,
+                name: user.email,
+                userId: user.id,
+                roles: user.roles,
+            },
+            { secret: appConfig().appSecret },
+        );
+        session.token = token;
+        await session.save();
+        return token;
+    }
 
+    public async verify(token: string): Promise<TSessionUser | null> {
+        const result = this.jwt.verify(token, {
+            secret: appConfig().appSecret,
+            ignoreExpiration: true,
+        });
+        if (!result.sub || !result.name) {
+            return null;
+        }
+        const session = await this.sessionRepository.findOne({
+            where: { id: result.sub, active: true },
+        });
+
+        if (
+            session &&
+            session.token == token &&
+            session.expiredAt.getTime() >= new Date().getTime()
+        ) {
+            const user = await this.userRepository.findOneBy({
+                id: session.userId,
+            });
+            return {
+                userId: session.userId,
+                email: user.email,
+                sessionId: session.id,
+                roles: user.roles,
+            };
+        }
         return null;
+    }
+
+    private decode(token: string): null | { [key: string]: any } | string {
+        return this.jwt.decode(token, {});
+    }
+
+    private async createSession(userId: number): Promise<AuthSession> {
+        const date = new Date();
+        date.setMonth(date.getMonth() + 1);
+        const session = this.sessionRepository.create({
+            userId: userId,
+            token: '',
+            expiredAt: date,
+            active: true,
+        });
+        await session.save();
+        return session;
     }
 }

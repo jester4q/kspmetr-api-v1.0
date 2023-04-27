@@ -8,22 +8,32 @@ import {
     InternalServerErrorException,
     BadRequestException,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBearerAuth,
+    ApiCreatedResponse,
+    ApiSecurity,
+    ApiTags,
+} from '@nestjs/swagger';
 import { AuthTokenGuard } from 'src/auth/token/authToken.guard';
 import { ProxySettingService } from './proxy-setting.service';
 import {
     DeleteProxySettingsRequestDTO,
     GetProxySettingsResponseDTO,
 } from './proxy-setting.dto';
+import { HasRoles } from 'src/user/roles/roles.decorator';
+import { UserRoleEnum } from 'src/user/types';
+import { UserRolesGuard } from 'src/user/roles/roles.guard';
 
 @ApiTags('Proxy Settings')
 @Controller('/api/proxy-settings')
 @ApiSecurity('bearer')
-@UseGuards(AuthTokenGuard)
+@UseGuards(AuthTokenGuard, UserRolesGuard)
 export class ProxySettingController {
     constructor(private proxySettingService: ProxySettingService) {}
 
     @Get('')
+    @HasRoles(UserRoleEnum.parser)
+    @ApiBearerAuth()
     @ApiCreatedResponse({
         description: 'List of proxy settings',
         type: GetProxySettingsResponseDTO,
@@ -40,6 +50,8 @@ export class ProxySettingController {
     }
 
     @Delete('/:id')
+    @HasRoles(UserRoleEnum.parser)
+    @ApiBearerAuth()
     async delete(
         @Param('id') id,
         @Body() req: DeleteProxySettingsRequestDTO,

@@ -11,10 +11,10 @@ export class ProductHistory extends BaseEntity {
     @Column()
     parsingId: number;
 
-    @Column()
+    @Column({ type: 'decimal' })
     unitPrice: number;
 
-    @Column()
+    @Column({ type: 'decimal' })
     creditMonthlyPrice: number;
 
     @Column()
@@ -23,7 +23,7 @@ export class ProductHistory extends BaseEntity {
     @Column()
     reviewsQuantity: number;
 
-    @Column()
+    @Column({ type: 'decimal' })
     productRating: number;
 
     @Column({ type: 'json' })
@@ -31,4 +31,7 @@ export class ProductHistory extends BaseEntity {
 
     @Column({ type: 'datetime' })
     createdAt: Date;
+
+    @Column()
+    sessionId: number;
 }

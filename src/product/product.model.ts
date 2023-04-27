@@ -1,25 +1,118 @@
+import { AddDetailedProductRequestDTO } from './add.detailed.product.dto';
+import { AddProductRequestDTO } from './add.product.dto';
 import {
-    SaveProductRequestDTO,
-    ProductSellerDTO,
-    AddProductRequestDTO,
-} from './product.dto';
-import { TCategoryPath } from './product.types';
+    TCategoryName,
+    TCategoryPath,
+    TProductImage,
+    TProductReview,
+    TProductSeller,
+    TProductSpecification,
+} from './product.types';
+import { SaveProductRequestDTO } from './save.product.dto';
+import { ProductCategoryPathDto } from './product.dto';
+import { isNumber, isArray, isString, strToDate } from '../utils';
 
-export class ProductModel {
-    constructor(private data: SaveProductRequestDTO) {}
+export interface IAddProductModel {
+    url: string;
+
+    code: string;
+
+    title: string;
+
+    cartegoryPath: TCategoryPath;
+
+    categoryId: number;
+
+    isValid(): boolean;
+}
+
+export interface IProductModel {
+    id: number;
+
+    code: string;
+
+    parsingId: number;
+
+    title: string;
+
+    url: string;
+
+    unitPrice: number | undefined;
+
+    creditMonthlyPrice: number | undefined;
+
+    rating: number | undefined;
+
+    galleryImages: TProductImage[] | undefined;
+
+    reviewsQuantity: number | undefined;
+
+    offersQuantity: number | undefined;
+
+    specification: TProductSpecification[] | undefined;
+
+    description: string | undefined;
+
+    sellers: TProductSeller[] | undefined;
+
+    reviews: TProductReview[] | undefined;
+
+    hasDetalsError: boolean;
+
+    hasSpecificationError: boolean;
+
+    hasDescriptionError: boolean;
+
+    hasSellersError: boolean;
+
+    hasReviewsError: boolean;
+
+    hasErrors: boolean;
+
+    getErrorMessage: string | undefined;
+
+    isNotFound: boolean;
+
+    isValid(): boolean;
+}
+
+export interface IAddDetailedProductModel
+    extends IAddProductModel,
+        IProductModel {
+    setId(id: number): void;
+
+    setCategories(path: TCategoryPath): void;
+
+    categoryName: TCategoryName;
+
+    isValid(): boolean;
+}
+
+export class ProductModel implements IProductModel {
+    constructor(protected data: SaveProductRequestDTO) {}
 
     public get id(): number {
+        if (!isNumber(this.data.id)) {
+            this.data.id = 0;
+        }
         if (typeof this.data.id === 'string') {
             this.data.id = parseInt(this.data.id);
         }
-        return this.data.id || 0;
+        return this.data.id;
     }
 
     public get code(): string {
-        return this.data.code || '';
+        if (!isString(this.data.code) && !isNumber(this.data.code)) {
+            this.data.code = '';
+        }
+        return String(this.data.code).toString();
     }
 
     public get parsingId(): number {
+        if (!isNumber(this.data.parsingId)) {
+            this.data.parsingId = 0;
+        }
+
         if (typeof this.data.parsingId === 'string') {
             this.data.parsingId = parseInt(this.data.parsingId);
         }
@@ -27,77 +120,123 @@ export class ProductModel {
     }
 
     public get title(): string {
-        return this.data.title || '---';
+        if (!isString(this.data.title)) {
+            this.data.title = '';
+        }
+        return this.data.title;
     }
 
-    public get unitPrice(): number {
+    public isValid(): boolean {
+        return !!this.code && !!this.url;
+    }
+
+    public get unitPrice(): number | undefined {
+        if (!isNumber(this.data.unitPrice)) {
+            return undefined;
+        }
         if (typeof this.data.unitPrice === 'string') {
             this.data.unitPrice = parseFloat(this.data.unitPrice);
         }
-        return this.data.unitPrice || 0;
+        return this.data.unitPrice;
     }
 
-    public get creditMonthlyPrice(): number {
+    public get creditMonthlyPrice(): number | undefined {
+        if (!isNumber(this.data.creditMonthlyPrice)) {
+            return undefined;
+        }
         if (typeof this.data.creditMonthlyPrice === 'string') {
             this.data.creditMonthlyPrice = parseFloat(
                 this.data.creditMonthlyPrice,
             );
         }
-        return this.data.creditMonthlyPrice || 0;
+        return this.data.creditMonthlyPrice;
     }
 
-    public get rating(): number {
+    public get rating(): number | undefined {
+        if (!isNumber(this.data.rating)) {
+            return undefined;
+        }
         if (typeof this.data.rating === 'string') {
             this.data.rating = parseFloat(this.data.rating);
         }
-        return 0 + this.data.rating || 0;
+        return this.data.rating;
     }
 
     public get url(): string {
-        return this.data.url || '';
+        if (!isString(this.data.url)) {
+            this.data.url = '';
+        }
+        return this.data.url;
     }
 
-    public get galleryImages(): any {
-        return this.data.galleryImages || {};
+    public get galleryImages(): TProductImage[] | undefined {
+        if (!Array.isArray(this.data.galleryImages)) {
+            return undefined;
+        }
+
+        return this.data.galleryImages;
     }
 
-    public get reviewsQuantity(): number {
+    public get reviewsQuantity(): number | undefined {
+        if (!isNumber(this.data.reviewsQuantity)) {
+            return undefined;
+        }
         if (typeof this.data.reviewsQuantity === 'string') {
             this.data.reviewsQuantity = parseInt(this.data.reviewsQuantity);
         }
-        return this.data.reviewsQuantity || 0;
+        return this.data.reviewsQuantity;
     }
 
-    public get offersQuantity(): number {
+    public get offersQuantity(): number | undefined {
+        if (!isNumber(this.data.offersQuantity)) {
+            return undefined;
+        }
         if (typeof this.data.offersQuantity === 'string') {
             this.data.offersQuantity = parseInt(this.data.offersQuantity);
         }
-        return this.data.offersQuantity || 0;
+        return this.data.offersQuantity;
     }
 
-    public get specification(): { name: string; value: string }[] {
-        return this.data.specification || [];
+    public get specification(): TProductSpecification[] | undefined {
+        if (!isArray(this.data.specification)) {
+            return undefined;
+        }
+        return this.data.specification;
     }
 
-    public get description(): string {
+    public get description(): string | undefined {
+        if (!isString(this.data.url)) {
+            return undefined;
+        }
         return this.data.description || '';
     }
 
-    public get sellers(): ProductSellerDTO[] {
-        return this.data.sellers || [];
+    public get sellers(): TProductSeller[] | undefined {
+        if (isArray(this.data.sellers)) {
+            return this.data.sellers.map((x) => ({
+                name: x.name,
+                price: x.price,
+                id: x.merchantId,
+                url: x.url,
+            }));
+        }
+        return undefined;
     }
 
-    public get reviews(): {
-        author: string;
-        date: string;
-        rating: number;
-        id: string;
-    }[] {
-        return this.data.reviews || [];
+    public get reviews(): TProductReview[] | undefined {
+        if (isArray(this.data.reviews)) {
+            return this.data.reviews.map((x) => ({
+                author: x.author,
+                date: strToDate(x.date),
+                id: x.externalId,
+                rating: x.rating,
+            }));
+        }
+        return undefined;
     }
 
     public get hasDetalsError(): boolean {
-        return this.data.errors && !this.data.errors.details;
+        return this.data.errors && !!this.data.errors.details;
     }
 
     public get hasSpecificationError() {
@@ -120,7 +259,7 @@ export class ProductModel {
         return this.data.errors && Object.keys(this.data.errors).length > 0;
     }
 
-    public get getErrorMessage() {
+    public get getErrorMessage(): string {
         return Object.values(this.data.errors).join(';');
     }
 
@@ -129,27 +268,85 @@ export class ProductModel {
     }
 }
 
-export class AddProductModel {
-    constructor(private data: AddProductRequestDTO) {}
+export class AddProductModel implements IAddProductModel {
+    constructor(protected data: AddProductRequestDTO | any) {}
+
+    isValid(): boolean {
+        return !!this.code && this.url && !!this.title && this.categoryId > 0;
+    }
 
     public get url(): string {
-        return this.data.url;
+        return (isString(this.data.url) && this.data.url) || '';
     }
 
     public get code(): string {
-        return this.data.code;
+        if (!isString(this.data.code) && !isNumber(this.data.code)) {
+            this.data.code = '';
+        }
+        return String(this.data.code).toString();
     }
 
     public get title(): string {
-        return this.data.title;
+        return (isString(this.data.title) && this.data.title) || '';
     }
 
-    public get cartegoryPath(): TCategoryPath {
-        return this.data.categories;
+    public get cartegoryPath(): TCategoryPath | undefined {
+        return this.data.categories || undefined;
     }
 
     public get categoryId(): number {
         const path = this.cartegoryPath;
-        return path.level4 || path.level3 || path.level2 || 0;
+        return (path && (path.level4 || path.level3 || path.level2)) || 0;
+    }
+}
+
+export class AddDetailedProductModel
+    extends ProductModel
+    implements IAddDetailedProductModel
+{
+    protected data: AddDetailedProductRequestDTO &
+        SaveProductRequestDTO & { categories: ProductCategoryPathDto };
+
+    constructor(data: AddDetailedProductRequestDTO) {
+        super({
+            ...data,
+            id: 0,
+            parsingId: 0,
+            errors: null,
+            isNotFound: false,
+        });
+    }
+
+    isValid(): boolean {
+        return !!this.code && this.url && !!this.title && !!this.categoryName;
+    }
+
+    public setId(id: number) {
+        if (!this.data.id) {
+            this.data.id = id;
+        } else {
+            throw new Error('Product id was defined before');
+        }
+    }
+
+    public setCategories(path: TCategoryPath) {
+        if (!this.data.categories) {
+            this.data.categories = path;
+        } else {
+            throw new Error('Category path was defined before');
+        }
+    }
+
+    public get cartegoryPath(): TCategoryPath {
+        return this.data.categories || undefined;
+    }
+
+    public get categoryId(): number {
+        const path = this.cartegoryPath;
+        return (path && (path.level4 || path.level3 || path.level2)) || 0;
+    }
+
+    public get categoryName(): TCategoryName {
+        return this.data.categoryName || undefined;
     }
 }

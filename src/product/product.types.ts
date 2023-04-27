@@ -27,3 +27,35 @@ export type TCategoryPath = {
     level3?: number;
     level4?: number;
 };
+
+export type TCategoryName = {
+    level1: string;
+    level2: string;
+    level3?: string;
+    level4?: string;
+};
+
+export type TProductImage = {
+    large: string;
+    medium: string;
+    small: string;
+};
+
+export type TProductSpecification = {
+    name: string;
+    value: string;
+};
+
+export type TProductSeller = {
+    name: string;
+    price: number;
+    id: string;
+    url: string;
+};
+
+export type TProductReview = {
+    author: string;
+    date: Date | null;
+    rating: number;
+    id: string;
+};

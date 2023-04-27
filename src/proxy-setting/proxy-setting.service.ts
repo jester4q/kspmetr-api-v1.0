@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Logger } from 'src/log/logger';
-import { ProxySetting } from './proxy-setting.entity';
-import { UserAgent } from './user-agent.entity';
+import { Logger } from '../log/logger';
 import { TProxySetting } from './proxy-setting.types';
+import { ProxySetting, UserAgent } from '../db/entities';
 
 @Injectable()
 export class ProxySettingService {

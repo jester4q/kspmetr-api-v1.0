@@ -1,6 +1,5 @@
-import { json } from 'stream/consumers';
+import { TCategoryPath } from '../../product/product.types';
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
-import { TCategoryPath } from './product.types';
 
 @Entity('products')
 export class Product extends BaseEntity {
@@ -16,16 +15,16 @@ export class Product extends BaseEntity {
     @Column({ length: 255 })
     url: string;
 
-    @Column()
+    @Column({ type: 'decimal' })
     unitPrice: number;
 
-    @Column()
+    @Column({ type: 'decimal' })
     creditMonthlyPrice: number;
 
-    @Column()
+    @Column({ type: 'int' })
     offersQuantity: number;
 
-    @Column()
+    @Column({ type: 'int' })
     reviewsQuantity: number;
 
     @Column()
@@ -40,7 +39,7 @@ export class Product extends BaseEntity {
     @Column({ type: 'datetime' })
     lastCheckedAt: Date;
 
-    @Column()
+    @Column({ type: 'decimal' })
     productRating: number;
 
     @Column()
@@ -60,4 +59,7 @@ export class Product extends BaseEntity {
 
     @Column()
     categoryId: number;
+
+    @Column()
+    sessionId: number;
 }

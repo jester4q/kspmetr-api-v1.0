@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsUrl, Max, Min } from 'class-validator';
 import { TCategoryPath } from './product.types';
 
 export class ProductDto {
@@ -51,12 +50,12 @@ export class ProductDto {
     @ApiProperty({
         description: 'Product specification',
     })
-    specification: { name: string; value: string }[];
+    specification: ProductSpecificationDto[];
 
     @ApiProperty({
         description: 'Product images gallerry urls',
     })
-    galleryImages: { lage: string; medium: string; small: string }[];
+    galleryImages: ProductImageDto[];
 
     @ApiProperty({
         description: 'Product last check date',
@@ -99,112 +98,97 @@ export class GetCategoryProductsResponseDTO {
     items: CategoryProductDto[];
 }
 
-export class AddProductRequestDTO {
+export class ProductSpecificationDto {
     @ApiProperty({
-        description: 'Product code',
+        description: 'Field name',
     })
-    code: string;
-
+    name: string;
     @ApiProperty({
-        description: 'Product title',
+        description: 'Field value',
     })
-    title: string;
-
-    @ApiProperty({
-        description: 'Product url',
-    })
-    url: string;
-
-    @ApiProperty({
-        description: 'Product category',
-    })
-    categories: TCategoryPath;
+    value: string;
 }
 
-export class SaveProductRequestDTO {
+export class ProductImageDto {
     @ApiProperty({
-        description: 'Product id',
+        description: 'Lage image url',
     })
-    id: number;
+    large: string;
 
     @ApiProperty({
-        description: 'Product code',
+        description: 'Medium image url',
     })
-    code: string;
+    medium: string;
 
     @ApiProperty({
-        description: 'Product parsing id',
+        description: 'Small image url',
     })
-    parsingId: number;
+    small: string;
+}
 
+export class ProductReviewDto {
     @ApiProperty({
-        description: 'Product title',
+        description: 'Reviw author name',
     })
-    title: string;
-
+    author: string;
     @ApiProperty({
-        description: 'Product price',
+        description: 'Review date',
     })
-    unitPrice: number;
-    @ApiProperty({
-        description: 'Product credit mounthly price',
-    })
-    creditMonthlyPrice: number;
-
+    date: string;
     @ApiProperty({
         description: 'Product rating',
     })
     rating: number;
-
     @ApiProperty({
-        description: 'Product url',
+        description: 'External review id',
     })
-    url: string;
+    externalId: string;
+}
 
+export class ProductCategoryPathDto {
     @ApiProperty({
-        description: 'Product images',
+        description: 'Level 1 category id',
+        required: true,
     })
-    galleryImages: any;
+    level1: number;
+    @ApiProperty({
+        description: 'Level 2 category id',
+        required: true,
+    })
+    level2: number;
+    @ApiProperty({
+        description: 'Level 3 category id',
+        required: false,
+    })
+    level3?: number;
+    @ApiProperty({
+        description: 'Level 4 category id',
+        required: false,
+    })
+    level4?: number;
+}
 
+export class ProductCategoryNameDto {
     @ApiProperty({
-        description: 'Amount product reviews',
+        description: 'Level 1 category name',
+        required: true,
     })
-    reviewsQuantity: number;
-
+    level1: string;
     @ApiProperty({
-        description: 'Amount product offers',
+        description: 'Level 2 category name',
+        required: true,
     })
-    offersQuantity: number;
-
+    level2: string;
     @ApiProperty({
-        description: 'Product specification',
+        description: 'Level 3 category name',
+        required: false,
     })
-    specification: any;
-
+    level3?: string;
     @ApiProperty({
-        description: 'Product description',
+        description: 'Level 4 category name',
+        required: false,
     })
-    description: string;
-
-    @ApiProperty({
-        description: 'Product sellers',
-    })
-    sellers: ProductSellerDTO[];
-
-    @ApiProperty({
-        description: 'Product reviews',
-    })
-    reviews: any;
-
-    @ApiProperty({
-        description: 'Errors of get product info',
-    })
-    errors: any;
-
-    @ApiProperty({
-        description: 'Product is not found',
-    })
-    isNotFound: boolean;
+    level4?: string;
 }
 
 export class ProductSellerDTO {
@@ -219,14 +203,9 @@ export class ProductSellerDTO {
     price: number;
 
     @ApiProperty({
-        description: 'Product seller credit monthly price',
+        description: 'Product seller merchantId',
     })
-    creditMonthlyPrice: number;
-
-    @ApiProperty({
-        description: 'Product seller id',
-    })
-    id: string;
+    merchantId: string;
 
     @ApiProperty({
         description: 'Product seller url',

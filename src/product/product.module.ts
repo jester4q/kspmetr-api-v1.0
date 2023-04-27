@@ -2,15 +2,22 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CategoryModule } from 'src/category/category.module';
 import { ProductController } from './product.controller';
-import { Product } from './product.entity';
 import { ProductService } from './product.service';
-import { ProductHistory } from './productHistory.entity';
-import { ProductReview } from './review.entity';
-import { ProductToSeller, Seller } from './seller.entity';
+import {
+    Product,
+    ProductHistory,
+    Seller,
+    ProductToSeller,
+    ProductReview,
+} from '../db/entities';
+import { LogModule } from 'src/log/log.module';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
     imports: [
         CategoryModule,
+        LogModule,
+        UserModule,
         TypeOrmModule.forFeature([
             Product,
             ProductHistory,

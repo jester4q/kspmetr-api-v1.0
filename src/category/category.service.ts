@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { DataSource, QueryRunner, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Logger } from 'src/log/logger';
-import { Category } from './category.entity';
+import { Logger } from '../log/logger';
 import { TCategory } from './category.types';
+import { Category } from '../db/entities';
+import { TCategoryPath } from 'src/product/product.types';
 
 @Injectable()
 export class CategoryService {
@@ -12,6 +13,7 @@ export class CategoryService {
     constructor(
         @InjectRepository(Category)
         private categoryRepository: Repository<Category>,
+        private dataSource: DataSource,
     ) {}
 
     public async fetchTree(
@@ -23,7 +25,12 @@ export class CategoryService {
                 id: parentCategoryId,
                 status: 1,
             });
-            if (parent && depth != 0) {
+            if (!parent) {
+                throw new Error(
+                    'There is no category with id = ' + parentCategoryId,
+                );
+            }
+            if (depth != 0) {
                 await this.fetchTreeBranch(parent, depth - 1);
             }
             return this.toCategory(parent);
@@ -35,7 +42,7 @@ export class CategoryService {
 
     public async fetchOne(categoryId: number): Promise<TCategory> {
         try {
-            const category = await this.categoryRepository.findOneBy({
+            const category = await this.categoryRepository.findOneByOrFail({
                 id: categoryId,
                 status: 1,
             });
@@ -87,7 +94,6 @@ export class CategoryService {
                     (newItem) => newItem.url == oldItem.url,
                 );
                 if (!hasItem) {
-                    console.log('NOT HAS', oldItem.id);
                     oldItem.status = 0;
                     await oldItem.save();
                 }
@@ -97,6 +103,95 @@ export class CategoryService {
             throw error;
         }
         return false;
+    }
+
+    public async checkPath(path: number[]): Promise<boolean> {
+        const categories = await this.categoryRepository
+            .createQueryBuilder()
+            .where('`Category`.id in (:...ids)', { ids: path })
+            .getMany();
+        if (path.length !== categories.length) {
+            return false;
+        }
+        let failed = false;
+        for (let i = path.length - 1; !failed && i >= 0; i--) {
+            const x = path[i];
+            const category = categories.find((cat) => cat.id == x);
+            if (
+                !category ||
+                (i > 0 && category.parentCategoryId != path[i - 1])
+            ) {
+                failed = true;
+            }
+        }
+        return !failed;
+    }
+
+    public async addPath(path: {
+        level1: string;
+        level2: string;
+        level3?: string;
+        level4?: string;
+    }): Promise<TCategoryPath> {
+        const way = [path.level1, path.level2, path.level3, path.level4].filter(
+            (x) => x && x.length > 0,
+        );
+        const result: TCategoryPath = { level1: 0, level2: 0 };
+        const queryRunner = this.dataSource.createQueryRunner();
+        try {
+            await queryRunner.connect();
+            await queryRunner.startTransaction();
+            let parentId = 0;
+            for (let i = 0; i < way.length; i++) {
+                const cat = await this.addCategory(
+                    i + 1,
+                    way[i],
+                    parentId,
+                    queryRunner,
+                );
+                result['level' + (i + 1)] = cat.id;
+                parentId = cat.id;
+            }
+            await queryRunner.commitTransaction();
+        } catch (err) {
+            await queryRunner.rollbackTransaction();
+            this.logger.log(err.message);
+            throw new Error('Could not create such category path');
+        } finally {
+            await queryRunner.release();
+        }
+
+        return result;
+    }
+
+    protected async addCategory(
+        level: number,
+        name: string,
+        parentId: number,
+        runner: QueryRunner,
+    ): Promise<Category> {
+        let cat = await this.categoryRepository
+            .createQueryBuilder()
+            .where('`Category`.name like :name', { name: name })
+            .andWhere('level = :n', { n: level })
+            .getOne();
+
+        if (cat) {
+            if (cat.parentCategoryId == parentId && cat.level === level) {
+                return cat;
+            }
+
+            throw new Error('Could not create category with name "${name}"');
+        }
+        cat = this.categoryRepository.create({
+            parentCategoryId: parentId,
+            name: name,
+            level: level,
+            url: '',
+            status: 1,
+        });
+        await runner.manager.save(cat);
+        return cat;
     }
 
     protected toCategory(category: Category): TCategory {

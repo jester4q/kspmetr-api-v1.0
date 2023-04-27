@@ -1,11 +1,21 @@
 import { Module } from '@nestjs/common';
+import { JwtModule } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthTokenStrategy } from './token/authToken.strategy';
 import { AuthTokensService } from './token/authToken.service';
-import { AuthToken } from './entities/authToken.entity';
+import { UserModule } from '../user/user.module';
+import { jwtConfig } from '../config/jwt.config';
+import { AuthController } from './controllers/auth.controller';
+import { AuthService } from './auth.service';
+import { AuthSession, User } from '../db/entities';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([AuthToken])],
-    providers: [AuthTokenStrategy, AuthTokensService],
+    imports: [
+        UserModule,
+        TypeOrmModule.forFeature([AuthSession, User]),
+        JwtModule.registerAsync(jwtConfig),
+    ],
+    controllers: [AuthController],
+    providers: [AuthService, AuthTokenStrategy, AuthTokensService],
 })
 export class AuthModule {}

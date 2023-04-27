@@ -1,7 +1,7 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt } from 'passport-jwt';
 
-import { AuthTokensService, TAuth } from './authToken.service';
+import { AuthTokensService, TSessionUser } from './authToken.service';
 import { Injectable } from '@nestjs/common';
 
 import passport = require('passport');
@@ -37,7 +37,7 @@ export class AuthTokenStrategy extends PassportStrategy(Strategy) {
         super(tokenService);
     }
 
-    async validate(payload: TAuth) {
+    async validate(payload: TSessionUser) {
         return payload;
     }
 }

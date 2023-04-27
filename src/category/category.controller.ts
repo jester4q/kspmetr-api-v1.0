@@ -1,6 +1,5 @@
 import {
     Controller,
-    Delete,
     Get,
     UseGuards,
     Param,
@@ -12,6 +11,7 @@ import {
 } from '@nestjs/common';
 import {
     ApiBadRequestResponse,
+    ApiBearerAuth,
     ApiBody,
     ApiCreatedResponse,
     ApiProperty,
@@ -25,15 +25,22 @@ import {
     SaveCategoriesRequestDTO,
 } from './category.dto';
 import { CategoryService } from './category.service';
+import { HasRoles } from 'src/user/roles/roles.decorator';
+import { UserRoleEnum } from 'src/user/types';
+import { UserRolesGuard } from 'src/user/roles/roles.guard';
+import { SessionUser } from 'src/auth/token/sessionUser.decorator';
+import { TSessionUser } from 'src/auth/token/authToken.service';
 
 @ApiTags('Product categories')
 @Controller('/api/categories')
 @ApiSecurity('bearer')
-@UseGuards(AuthTokenGuard)
+@UseGuards(AuthTokenGuard, UserRolesGuard)
 export class CategoryController {
     constructor(private categoryService: CategoryService) {}
 
     @Get('/:parentId')
+    @HasRoles(UserRoleEnum.parser)
+    @ApiBearerAuth()
     @ApiProperty({ name: 'parentId', required: true })
     @ApiQuery({ name: 'depth', required: false })
     @ApiCreatedResponse({
@@ -66,9 +73,12 @@ export class CategoryController {
     }
 
     @Post('/:parentId')
+    @HasRoles(UserRoleEnum.parser)
+    @ApiBearerAuth()
     @ApiProperty({ name: 'parentId', required: true })
     @ApiBody({ required: true })
     async save(
+        @SessionUser() user: TSessionUser,
         @Param('parentId') parentId: number,
         @Body() req: SaveCategoriesRequestDTO,
     ): Promise<{}> {

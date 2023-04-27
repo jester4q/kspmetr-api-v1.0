@@ -1,13 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Product } from './product.entity';
-import { ProductHistory } from './productHistory.entity';
 import { TCategoryProduct, TProduct } from './product.types';
 import { Logger } from 'src/log/logger';
-import { AddProductModel, ProductModel } from './product.model';
-import { ProductReview } from './review.entity';
-import { ProductToSeller, Seller } from './seller.entity';
+import {
+    AddDetailedProductModel,
+    AddProductModel,
+    IAddDetailedProductModel,
+    IAddProductModel,
+    IProductModel,
+    ProductModel,
+} from './product.model';
+import {
+    Product,
+    ProductHistory,
+    ProductReview,
+    ProductToSeller,
+    Seller,
+} from '../db/entities';
+import { TSessionUser } from 'src/auth/token/authToken.service';
+import { CategoryService } from 'src/category/category.service';
 
 export enum DataTypesEnum {
     prices = 'prices',
@@ -42,6 +54,7 @@ export class ProductService {
         private sellerRepository: Repository<Seller>,
         @InjectRepository(ProductToSeller)
         private productToSellerRepository: Repository<ProductToSeller>,
+        private categoryService: CategoryService,
     ) {}
 
     public async fetchOne(id: number): Promise<TProduct> {
@@ -87,16 +100,46 @@ export class ProductService {
         }
     }
 
-    public async add(source: AddProductModel): Promise<TProduct> {
+    public async addAndUpdate(
+        session: TSessionUser,
+        model: IAddDetailedProductModel,
+    ) {
+        if (!model.isValid()) {
+            throw new Error('Culd not add/update product by this data');
+        }
+
+        const categoryPath = await this.categoryService.addPath(
+            model.categoryName,
+        );
+        model.setCategories(categoryPath);
+        const product = await this.productRepository.findOneBy({
+            code: model.code,
+        });
+        const newProduct = await this.add(session, model);
+        if (!model.id) {
+            model.setId(newProduct.id);
+        }
+
+        return this.save(session, model.id, model);
+    }
+
+    public async add(
+        session: TSessionUser,
+        source: IAddProductModel,
+    ): Promise<TProduct> {
+        if (!source.isValid()) {
+            throw new Error('Culd not add product by this data');
+        }
+
         let product = await this.productRepository.findOneBy({
             code: source.code,
         });
-        const path = source.cartegoryPath;
         if (product) {
-            product.title = source.title;
-            product.url = source.url;
-            product.categories = source.cartegoryPath;
-            product.categoryId = source.categoryId;
+            product.title = source.title || product.title;
+            product.url = source.url || product.url;
+
+            product.categories = source.cartegoryPath || product.categories;
+            product.categoryId = source.categoryId || product.categoryId;
         } else {
             product = this.productRepository.create({
                 code: source.code,
@@ -104,6 +147,7 @@ export class ProductService {
                 url: source.url,
                 categoryId: source.categoryId,
                 categories: source.cartegoryPath,
+                sessionId: session.sessionId,
             });
         }
         await product.save();
@@ -111,9 +155,13 @@ export class ProductService {
     }
 
     public async save(
+        session: TSessionUser,
         productId: number,
-        source: ProductModel,
+        source: IProductModel,
     ): Promise<TProduct> {
+        if (!source.isValid()) {
+            throw new Error('Culd not save product data');
+        }
         let product;
         try {
             product = await this.productRepository.findOneBy({
@@ -143,12 +191,13 @@ export class ProductService {
         const history: Partial<ProductHistory> = {
             productId: productId,
             parsingId: source.parsingId,
+            sessionId: session.sessionId,
         };
 
-        if (!source.hasReviewsError) {
+        if (source.reviews && !source.hasReviewsError) {
             let rating;
             try {
-                rating = await this.saveReviews(source, productId);
+                rating = await this.saveReviews(session, source, productId);
             } catch (error) {
                 this.logger.log('saveReviews: ' + JSON.stringify(error));
                 throw error;
@@ -156,31 +205,45 @@ export class ProductService {
             product.productRating = rating;
             history.productRating = rating;
         }
-        if (!source.hasDescriptionError) {
+        if (source.description && !source.hasDescriptionError) {
             product.description = source.description;
         }
-        if (!source.hasSellersError) {
+        if (source.sellers && !source.hasSellersError) {
             let sellers;
             try {
-                sellers = await this.saveSeller(source, productId);
+                sellers = await this.saveSeller(session, source, productId);
             } catch (error) {
                 this.logger.log('saveSeller: ' + JSON.stringify(error));
                 throw error;
             }
-            product.unitPrice = source.unitPrice;
-            product.creditMonthlyPrice = source.creditMonthlyPrice;
-            product.offersQuantity = source.offersQuantity;
-            history.unitPrice = source.unitPrice;
-            history.creditMonthlyPrice = source.creditMonthlyPrice;
-            history.offersQuantity = source.offersQuantity;
             history.productSellers = sellers;
         }
-        if (!source.hasDetalsError) {
-            product.galleryImages = source.galleryImages;
-            product.reviewsQuantity = source.reviewsQuantity;
-            history.reviewsQuantity = source.reviewsQuantity;
+        if (product.unitPrice !== undefined) {
+            product.unitPrice = source.unitPrice;
+            history.unitPrice = source.unitPrice;
         }
-        if (!source.hasSpecificationError) {
+        if (product.creditMonthlyPrice !== undefined) {
+            product.creditMonthlyPrice = source.creditMonthlyPrice;
+            history.creditMonthlyPrice = source.creditMonthlyPrice;
+        }
+        if (product.offersQuantity !== undefined) {
+            product.offersQuantity = source.offersQuantity;
+            history.offersQuantity = source.offersQuantity;
+        }
+
+        if (!source.hasDetalsError) {
+            if (source.galleryImages) {
+                product.galleryImages = source.galleryImages;
+            }
+            if (source.reviewsQuantity !== undefined) {
+                product.reviewsQuantity = source.reviewsQuantity;
+                history.reviewsQuantity = source.reviewsQuantity;
+            }
+        }
+        if (
+            source.specification !== undefined &&
+            !source.hasSpecificationError
+        ) {
             product.specification = source.specification;
         }
         try {
@@ -201,7 +264,8 @@ export class ProductService {
     }
 
     private async saveSeller(
-        product: ProductModel,
+        session: TSessionUser,
+        product: IProductModel,
         productId: number,
     ): Promise<{ sellerId: number; price: number }[]> {
         const sellers = product.sellers;
@@ -246,6 +310,7 @@ export class ProductService {
                 }
             } else {
                 const newItem = this.sellerRepository.create(item);
+                newItem.sessionId = session.sessionId;
                 await newItem.save();
                 items.push(newItem);
             }
@@ -297,7 +362,8 @@ export class ProductService {
     }
 
     private async saveReviews(
-        product: ProductModel,
+        session: TSessionUser,
+        product: IProductModel,
         productId: number,
     ): Promise<number> {
         if (product.reviews.length) {
@@ -309,6 +375,7 @@ export class ProductService {
                 date: review.date,
                 rating: review.rating,
                 externalId: review.id,
+                sessionId: session.sessionId,
             }));
             await this.reviewRepository
                 .createQueryBuilder()
