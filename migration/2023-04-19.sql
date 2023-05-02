@@ -57,7 +57,7 @@ ALTER TABLE `log`
 
 ALTER TABLE `log`
   ADD CONSTRAINT `log_ibfk_1` FOREIGN KEY (`userId`) REFERENCES `users` (`id`) ON DELETE RESTRICT,
-  ADD CONSTRAINT `log_ibfk_2` FOREIGN KEY (`sessionId`) REFERENCES `authsessions` (`id`) ON DELETE RESTRICT;
+  ADD CONSTRAINT `log_ibfk_2` FOREIGN KEY (`sessionId`) REFERENCES `authSessions` (`id`) ON DELETE RESTRICT;
 
   ALTER TABLE `log` CHANGE `id` `id` INT UNSIGNED NOT NULL AUTO_INCREMENT;
 

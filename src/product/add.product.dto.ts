@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ProductCategoryPathDto } from './product.dto';
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, Validate } from 'class-validator';
+import { IsNumberOrString } from './numberOrString.validator';
 
 export class AddProductRequestDTO {
     @ApiProperty({
@@ -8,7 +9,7 @@ export class AddProductRequestDTO {
         type: Number,
     })
     @IsNotEmpty()
-    @IsNumber()
+    @Validate(IsNumberOrString)
     code: string;
 
     @ApiProperty({

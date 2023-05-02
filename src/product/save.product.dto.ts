@@ -5,7 +5,8 @@ import {
     ProductSellerDTO,
     ProductSpecificationDto,
 } from './product.dto';
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, Validate } from 'class-validator';
+import { IsNumberOrString } from './numberOrString.validator';
 
 export class SaveProductRequestDTO {
     @ApiProperty({
@@ -17,7 +18,7 @@ export class SaveProductRequestDTO {
         description: 'Product code',
     })
     @IsNotEmpty()
-    @IsNumber()
+    @Validate(IsNumberOrString)
     code: string;
 
     @ApiProperty({
