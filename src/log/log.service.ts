@@ -1,7 +1,7 @@
 //import moment from 'moment';
 const moment = require('moment');
 import { Injectable } from '@nestjs/common';
-import { MoreThan, Repository } from 'typeorm';
+import { Like, MoreThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Log } from '../db/entities';
 import { TSessionUser } from 'src/auth/token/authToken.service';
@@ -23,29 +23,45 @@ export class LogService {
         return newLog;
     }
 
-    async countRequestForHour(userId: number): Promise<number> {
-        return await this.logRepository.count({
-            where: {
-                userId: userId,
-                createdAt: MoreThan(moment().add(-1, 'h').toDate()),
-            },
-        });
+    async countRequestForHour(
+        userId: number,
+        query: string,
+        h: number,
+    ): Promise<number> {
+        return await this.countRequest(userId, query, 'h', h);
     }
 
-    async countRequestFor10Minute(userId: number): Promise<number> {
-        return await this.logRepository.count({
-            where: {
-                userId: userId,
-                createdAt: MoreThan(moment().add(-10, 'm').toDate()),
-            },
-        });
+    async countRequestForMinute(
+        userId: number,
+        query: string,
+        min: number,
+    ): Promise<number> {
+        return await this.countRequest(userId, query, 'm', min);
     }
 
-    async countRequestForDay(userId: number): Promise<number> {
+    async countRequestForDay(
+        userId: number,
+        query: string,
+        d: number,
+    ): Promise<number> {
+        return await this.countRequest(userId, query, 'd', d);
+    }
+
+    private async countRequest(
+        userId: number,
+        query: string,
+        t: string,
+        n: number,
+    ): Promise<number> {
         return await this.logRepository.count({
             where: {
                 userId: userId,
-                createdAt: MoreThan(moment().add(-24, 'h').toDate()),
+                query: Like(query + '%'),
+                createdAt: MoreThan(
+                    moment()
+                        .add(-1 * n, t)
+                        .toDate(),
+                ),
             },
         });
     }

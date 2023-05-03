@@ -15,4 +15,5 @@ export enum UserRoleEnum {
     admin = 'admin',
     parser = 'parser',
     chromeExtension = 'chrome_ext',
+    siteUser = 'site_user',
 }

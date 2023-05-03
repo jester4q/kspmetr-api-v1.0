@@ -10,14 +10,14 @@ import {
     ProductToSeller,
     ProductReview,
 } from '../db/entities';
+import { UserModule } from '../user/user.module';
 import { LogModule } from 'src/log/log.module';
-import { UserModule } from 'src/user/user.module';
 
 @Module({
     imports: [
         CategoryModule,
-        LogModule,
         UserModule,
+        LogModule,
         TypeOrmModule.forFeature([
             Product,
             ProductHistory,

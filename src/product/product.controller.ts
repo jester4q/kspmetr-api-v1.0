@@ -38,7 +38,7 @@ import { TSessionUser } from 'src/auth/token/authToken.service';
 import { AddProductRequestDTO } from './add.product.dto';
 import { SaveProductRequestDTO } from './save.product.dto';
 import { AddDetailedProductRequestDTO } from './add.detailed.product.dto';
-import { ProductGuard } from './product.guard';
+import { UserRequestGuard } from 'src/user/user.request.guard';
 
 @ApiTags('Product')
 @Controller('/api/products')
@@ -111,7 +111,7 @@ export class ProductController {
 
     @Post('/detailed')
     @HasRoles(UserRoleEnum.chromeExtension)
-    @UseGuards(ProductGuard)
+    @UseGuards(UserRequestGuard)
     @ApiBearerAuth()
     @ApiCreatedResponse({
         description: 'Add product of some category',

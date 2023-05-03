@@ -10,6 +10,7 @@ import { entites } from './db/orm.config';
 
 import dbConfig from './config/db.config';
 import { LogModule } from './log/log.module';
+import { ProductDetailsModule } from './product-details/product.details.module';
 
 @Module({
     imports: [
@@ -23,6 +24,7 @@ import { LogModule } from './log/log.module';
         CategoryModule,
         ProductModule,
         LogModule,
+        ProductDetailsModule,
     ],
 })
 export class AppModule implements NestModule {

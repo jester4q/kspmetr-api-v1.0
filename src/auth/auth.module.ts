@@ -5,7 +5,7 @@ import { AuthTokenStrategy } from './token/authToken.strategy';
 import { AuthTokensService } from './token/authToken.service';
 import { UserModule } from '../user/user.module';
 import { jwtConfig } from '../config/jwt.config';
-import { AuthController } from './controllers/auth.controller';
+import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { AuthSession, User } from '../db/entities';
 
