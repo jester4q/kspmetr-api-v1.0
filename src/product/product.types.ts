@@ -8,8 +8,8 @@ export type TProduct = {
     offersQuantity: number;
     reviewsQuantity: number;
     description: string;
-    specification: { name: string; value: string }[];
-    galleryImages: { lage: string; medium: string; small: string }[];
+    specification: TProductSpecification[];
+    galleryImages: TProductImage[];
     lastCheckedAt: Date;
     productRating: number;
 };

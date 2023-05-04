@@ -90,14 +90,6 @@ export class CategoryProductDto {
     url: string;
 }
 
-export class GetProductsResponseDTO {
-    items: ProductDto[];
-}
-
-export class GetCategoryProductsResponseDTO {
-    items: CategoryProductDto[];
-}
-
 export class ProductSpecificationDto {
     @ApiProperty({
         description: 'Field name',

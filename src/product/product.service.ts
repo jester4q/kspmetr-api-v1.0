@@ -71,8 +71,10 @@ export class ProductService {
 
     public async fetchAllInCategory(
         categoryIds: number[],
+        reverse: boolean = false,
     ): Promise<TCategoryProduct[]> {
         try {
+            console.log(reverse);
             const products1 = await this.productRepository
                 .createQueryBuilder()
                 .where('`Product`.categoryId in (:...ids)', {
@@ -80,7 +82,7 @@ export class ProductService {
                 })
                 .andWhere('(`Product`.status=1 OR `Product`.attempt < 4)')
                 .andWhere('`Product`.lastCheckedAt IS NOT NULL')
-                .orderBy('`Product`.lastCheckedAt')
+                .orderBy('`Product`.lastCheckedAt', reverse ? 'DESC' : 'ASC')
                 .getMany();
             const products2 = await this.productRepository
                 .createQueryBuilder()
@@ -89,11 +91,13 @@ export class ProductService {
                 })
                 .andWhere('(`Product`.status=1 OR `Product`.attempt < 4)')
                 .andWhere('`Product`.lastCheckedAt IS NULL')
-                .orderBy('`Product`.id', 'DESC')
+                .orderBy('`Product`.id', reverse ? 'DESC' : 'ASC')
                 .getMany();
-            return [...products1, ...products2].map((item) =>
-                this.toCategoryProduct(item),
-            );
+            return (
+                reverse
+                    ? [...products2, ...products1]
+                    : [...products1, ...products2]
+            ).map((item) => this.toCategoryProduct(item));
         } catch (error) {
             this.logger.log(JSON.stringify(error));
             throw error;

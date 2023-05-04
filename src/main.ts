@@ -11,7 +11,9 @@ async function bootstrap() {
     const port = appConfig().appPort || 3000;
     const app = await NestFactory.create(AppModule, { cors: true });
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
-    app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalPipes(
+        new ValidationPipe({ whitelist: true, transform: true }),
+    );
     const config = new DocumentBuilder()
         .setTitle('SkyMetric: REST Api')
         .setDescription('')

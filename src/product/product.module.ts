@@ -12,6 +12,7 @@ import {
 } from '../db/entities';
 import { UserModule } from '../user/user.module';
 import { LogModule } from 'src/log/log.module';
+import { ProductListController } from './product.list.controller';
 
 @Module({
     imports: [
@@ -26,7 +27,7 @@ import { LogModule } from 'src/log/log.module';
             ProductReview,
         ]),
     ],
-    controllers: [ProductController],
+    controllers: [ProductController, ProductListController],
     providers: [ProductService],
 })
 export class ProductModule {}

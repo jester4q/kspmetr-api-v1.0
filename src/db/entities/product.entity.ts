@@ -1,4 +1,8 @@
-import { TCategoryPath } from '../../product/product.types';
+import {
+    TCategoryPath,
+    TProductImage,
+    TProductSpecification,
+} from '../../product/product.types';
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
 
 @Entity('products')
@@ -31,10 +35,10 @@ export class Product extends BaseEntity {
     description: string;
 
     @Column({ type: 'json' })
-    specification: { name: string; value: string }[];
+    specification: TProductSpecification[];
 
     @Column({ type: 'json' })
-    galleryImages: { lage: string; medium: string; small: string }[];
+    galleryImages: TProductImage[];
 
     @Column({ type: 'datetime' })
     lastCheckedAt: Date;

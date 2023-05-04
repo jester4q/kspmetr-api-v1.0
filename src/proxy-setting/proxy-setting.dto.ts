@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional, IsString } from 'class-validator';
 
 export class ProxySettingDTO {
     @ApiProperty({
@@ -45,5 +46,7 @@ export class DeleteProxySettingsRequestDTO {
     @ApiProperty({
         description: 'Reason for delete settings',
     })
+    @IsOptional()
+    @IsString()
     reason: string;
 }
