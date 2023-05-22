@@ -44,3 +44,16 @@ INSERT INTO `categories` (`id`, `level`, `parentCategoryId`, `name`, `url`) VALU
 (NULL, '2', '137', 'Электронное оборудование для торговли', 'https://kaspi.kz/shop/nur-sultan/c/electronic%20equipment%20for%20trade/?q='),
 (NULL, '2', '137', 'IP-телефония и конференц-оборудование', 'https://kaspi.kz/shop/nur-sultan/c/ip%20telephony%20and%20conference%20equipment/?q='),
 (NULL, '2', '137', 'Программное обеспечение', 'https://kaspi.kz/shop/nur-sultan/c/computer%20software/?q=');
+
+
+
+INSERT INTO `categories` (`id`, `level`, `parentCategoryId`, `name`, `url`) VALUES 
+(NULL, '1', '0', 'Подарки, товары для праздников', 'https://kaspi.kz/shop/nur-sultan/c/gifts%20and%20party%20supplies/');
+INSERT INTO `categories` (`id`, `level`, `parentCategoryId`, `name`, `url`) VALUES 
+(NULL, '2', '239', 'Подарки', 'https://kaspi.kz/shop/nur-sultan/c/gifts/?q='), 
+(NULL, '2', '239', 'Новогодние товары', 'https://kaspi.kz/shop/nur-sultan/c/new%20year%20decor/?q'),
+(NULL, '2', '239', 'Украшения для праздников', 'https://kaspi.kz/shop/nur-sultan/c/holiday%20decorations/?q='),
+(NULL, '2', '239', 'Подарочная упаковка', 'https://kaspi.kz/shop/nur-sultan/c/gift%20wrapping%20supplies/?q='),
+(NULL, '2', '239', 'Карнавальные костюмы, аксессуары для вечеринок', 'https://kaspi.kz/shop/nur-sultan/c/carnival%20accessories/?q='),
+(NULL, '2', '239', 'Цветы и букеты', 'https://kaspi.kz/shop/nur-sultan/c/flowers%20and%20bouquets/?q='),
+(NULL, '2', '239', 'Сувенирная продукция', 'https://kaspi.kz/shop/nur-sultan/c/souvenirs/?q=');

@@ -45,7 +45,7 @@ export class ProductDetailsController {
     ) {}
 
     @Get('?')
-    @HasRoles(UserRoleEnum.siteUser)
+    @HasRoles(UserRoleEnum.siteUser, UserRoleEnum.chromeExtension)
     @UseGuards(UserRequestGuard)
     @ApiCreatedResponse({
         description: 'Return information about product by url or code',
@@ -102,7 +102,6 @@ export class ProductDetailsController {
         const stat = await (mode === ModeEnum.values
             ? this.productService.fetchStatByValues(product.id, period, types)
             : this.productService.fetchStatByDates(product.id, period, types));
-
         const result: ProductDetailsDto = {
             code: product.code,
             dateLastCheck:

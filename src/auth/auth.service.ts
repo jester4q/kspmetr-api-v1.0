@@ -23,7 +23,7 @@ export class AuthService {
         return {};
     }
 
-    async login(email: string, password: string): Promise<string> {
+    async loginByEmail(email: string, password: string): Promise<string> {
         // Check if user exists
         const user = await this.userService.findByEmail(email);
         if (!user) {
@@ -31,6 +31,16 @@ export class AuthService {
         }
         if (!(await bcrypt.compare(password, user.password))) {
             throw new BadRequestException('Password is incorrect');
+        }
+        const token = await this.tokenService.sign(user);
+        return token;
+    }
+
+    async loginByFingerprint(fingerprint: string): Promise<string> {
+        // Check if user exists
+        const user = await this.userService.findByFingerprint(fingerprint);
+        if (!user) {
+            throw new BadRequestException('User does not exist');
         }
         const token = await this.tokenService.sign(user);
         return token;

@@ -52,7 +52,6 @@ export class ProductController {
         @SessionUser() user: TSessionUser,
         @Body() product: AddProductRequestDTO,
     ): Promise<ProductDto> {
-        console.log(product);
         try {
             const model = new AddProductModel(product);
             const result = await this.productService.add(user, model);
@@ -98,7 +97,6 @@ export class ProductController {
         @Param('id') id: number,
         @Body() product: SaveProductRequestDTO,
     ): Promise<ProductDto> {
-        console.log(product);
         try {
             const model = new ProductModel(product);
             return this.productService.save(user, id, model);

@@ -6,6 +6,7 @@ import {
     CreateDateColumn,
     BaseEntity,
     OneToMany,
+    BeforeUpdate,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserRoleEnum } from '../../user/types';
@@ -18,6 +19,9 @@ export class User extends BaseEntity {
 
     @Column({ unique: true })
     email: string;
+
+    @Column({ unique: true })
+    fingerprint: string;
 
     @Column()
     password: string;
@@ -35,8 +39,14 @@ export class User extends BaseEntity {
     sessions: AuthSession[];
 
     @BeforeInsert()
+    @BeforeUpdate()
     async setPassword(password: string) {
-        const salt = await bcrypt.genSalt();
-        this.password = await bcrypt.hash(password || this.password, salt);
+        const value = password || this.password;
+        console.log(value);
+        if (value) {
+            const salt = await bcrypt.genSalt();
+            console.log(salt);
+            this.password = await bcrypt.hash(value, salt);
+        }
     }
 }

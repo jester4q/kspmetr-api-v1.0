@@ -1,22 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, Length, Matches } from 'class-validator';
+import { IsEmail, IsOptional, Length, Matches } from 'class-validator';
 import { PASSWORD_RULE } from './rules';
 import { UserRoleEnum } from './types';
+import { IsAlreadyRegister } from './isAlreadyRegister.validation';
+import { ContextAwareDto } from 'src/context-aware.dto';
 
-export class UpdateUserRequestDto {
+export class UpdateUserRequestDto extends ContextAwareDto {
     @ApiProperty({
         description: 'The email address of the User',
         example: 'jhon.doe@gmail.com',
     })
-    @IsNotEmpty()
+    @IsOptional()
     @IsEmail()
+    @IsAlreadyRegister()
     email?: string;
 
     @ApiProperty({
         description: 'The password of the User',
         example: 'Password@123',
     })
-    @IsNotEmpty()
+    @IsOptional()
     @Length(8, 24)
     @Matches(PASSWORD_RULE.value, { message: PASSWORD_RULE.message })
     password?: string;
@@ -27,5 +30,6 @@ export class UpdateUserRequestDto {
         isArray: true,
         enum: UserRoleEnum,
     })
+    @IsOptional()
     roles?: UserRoleEnum[];
 }

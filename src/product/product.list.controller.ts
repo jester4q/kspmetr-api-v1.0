@@ -43,7 +43,6 @@ export class ProductListController {
         @Query() query: GetCategoryProductsQueryDto,
     ): Promise<GetCategoryProductsResponseDto> {
         let category;
-        console.log(query);
         const { reverse } = query;
         try {
             category = await this.categoryService.fetchTree(categoryId);

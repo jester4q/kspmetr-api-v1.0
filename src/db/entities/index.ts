@@ -8,3 +8,4 @@ export { ProductToSeller, Seller } from './seller.entity';
 export { UserAgent } from './user-agent.entity';
 export { User } from './user.entity';
 export { Log } from './log.entity';
+export { ProductRequest } from './productRequest.entity';

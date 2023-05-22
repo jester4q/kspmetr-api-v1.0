@@ -11,6 +11,7 @@ export type TSessionUser = {
     userId: number;
     sessionId: number;
     email: string;
+    fingerprint: string;
     roles: UserRoleEnum[];
 };
 
@@ -29,7 +30,7 @@ export class AuthTokensService {
         const token = this.jwt.sign(
             {
                 sub: session.id,
-                name: user.email,
+                name: user.email || user.fingerprint,
                 userId: user.id,
                 roles: user.roles,
             },
@@ -45,7 +46,7 @@ export class AuthTokensService {
             secret: appConfig().appSecret,
             ignoreExpiration: true,
         });
-        if (!result.sub || !result.name) {
+        if (!result.sub || !result.userId) {
             return null;
         }
         const session = await this.sessionRepository.findOne({
@@ -63,6 +64,7 @@ export class AuthTokensService {
             return {
                 userId: session.userId,
                 email: user.email,
+                fingerprint: user.fingerprint,
                 sessionId: session.id,
                 roles: user.roles,
             };

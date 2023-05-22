@@ -1,6 +1,7 @@
 export type TUserAdd = {
     email: string;
     password: string;
+    fingerprint?: string;
     roles: UserRoleEnum[];
 };
 

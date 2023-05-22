@@ -74,7 +74,6 @@ export class ProductService {
         reverse: boolean = false,
     ): Promise<TCategoryProduct[]> {
         try {
-            console.log(reverse);
             const products1 = await this.productRepository
                 .createQueryBuilder()
                 .where('`Product`.categoryId in (:...ids)', {

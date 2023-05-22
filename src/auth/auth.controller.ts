@@ -23,7 +23,15 @@ export class AuthController {
     })
     @ApiBadRequestResponse({ description: 'User cannot sign up.' })
     async login(@Body() req: AuthLoginRequestDto): Promise<AuthLoginResultDto> {
-        const token = await this.authService.login(req.email, req.password);
+        let token = '';
+        if (req.email) {
+            token = await this.authService.loginByEmail(
+                req.email,
+                req.password,
+            );
+        } else {
+            token = await this.authService.loginByFingerprint(req.fingerprint);
+        }
         return { token: token };
     }
 

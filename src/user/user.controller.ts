@@ -1,4 +1,12 @@
-import { Body, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Get,
+    InternalServerErrorException,
+    Param,
+    Patch,
+    Post,
+    UseGuards,
+} from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
 import {
@@ -19,16 +27,17 @@ import { HasRoles } from './roles/roles.decorator';
 import { User } from '../db/entities';
 import { UserRolesGuard } from './roles/roles.guard';
 import { TSessionUser } from '../auth/token/authToken.service';
+import { SignupUserRequestDto } from './signupUser.dto';
 
 @ApiTags('User')
 @Controller('/api/user')
-@ApiSecurity('bearer')
-@UseGuards(AuthTokenGuard, UserRolesGuard)
 export class UserController {
     constructor(private userService: UserService) {}
 
     @Get('')
+    @UseGuards(AuthTokenGuard)
     @ApiBearerAuth()
+    @ApiSecurity('bearer')
     @ApiCreatedResponse({
         description: 'Current user info',
         type: UserResultDto,
@@ -45,8 +54,10 @@ export class UserController {
     }
 
     @Post('')
+    @UseGuards(AuthTokenGuard, UserRolesGuard)
     @HasRoles(UserRoleEnum.admin)
     @ApiBearerAuth()
+    @ApiSecurity('bearer')
     @ApiCreatedResponse({
         description: 'Create new user',
         type: UserResultDto,
@@ -58,14 +69,38 @@ export class UserController {
         try {
             const user = await this.userService.add(req);
             return this.mapUserToDto(user);
-        } catch {
-            throw new BadRequestException('Culd not add new user');
+        } catch (error) {
+            throw new InternalServerErrorException(error.message);
+        }
+    }
+
+    @Post('/signup')
+    @ApiCreatedResponse({
+        description: 'Sign up new user',
+        type: UserResultDto,
+    })
+    @ApiBadRequestResponse({
+        description: 'Culd not add new user',
+    })
+    async signupUser(
+        @Body() req: SignupUserRequestDto,
+    ): Promise<UserResultDto> {
+        if (req.email && !req.password) {
+            throw new BadRequestException('Password is requred');
+        }
+        try {
+            const user = await this.userService.signup({ ...req, roles: [] });
+            return this.mapUserToDto(user);
+        } catch (error) {
+            throw new InternalServerErrorException(error.message);
         }
     }
 
     @Patch('/:id')
+    @UseGuards(AuthTokenGuard, UserRolesGuard)
     @HasRoles(UserRoleEnum.admin)
     @ApiBearerAuth()
+    @ApiSecurity('bearer')
     @ApiCreatedResponse({
         description: 'Update user',
         type: UserResultDto,
@@ -82,10 +117,10 @@ export class UserController {
             throw new BadRequestException('Culd not find user by id' + id);
         }
         try {
-            const updatedUser = await this.userService.upate(id, req);
+            const updatedUser = await this.userService.update(id, req);
             return this.mapUserToDto(updatedUser);
-        } catch {
-            throw new BadRequestException('Culd not add new user');
+        } catch (error) {
+            throw new InternalServerErrorException(error.message);
         }
     }
 
