@@ -143,6 +143,7 @@ export class ProductService {
 
             product.categories = source.cartegoryPath || product.categories;
             product.categoryId = source.categoryId || product.categoryId;
+            product.position = source.position;
         } else {
             product = this.productRepository.create({
                 code: source.code,
@@ -151,6 +152,7 @@ export class ProductService {
                 categoryId: source.categoryId,
                 categories: source.cartegoryPath,
                 sessionId: session.sessionId,
+                position: source.position,
             });
         }
         await product.save();

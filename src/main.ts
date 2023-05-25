@@ -1,10 +1,6 @@
 require('dotenv').config();
 
 import * as basicAuth from 'express-basic-auth';
-import * as express from 'express';
-import * as http from 'http';
-import * as https from 'https';
-import * as fs from 'fs';
 import appConfig from './config/app.config';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common/pipes';
@@ -12,30 +8,26 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { useContainer } from 'class-validator';
 import { ContextInterceptor } from './context.interceptor';
-import { ExpressAdapter } from '@nestjs/platform-express';
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
     const appConf = appConfig();
     const httpPort = appConf.appHttpPort || 3000;
-    const httpsPort = appConf.appHttpsPort || 0;
-    const server = express();
-    const app = await NestFactory.create(
-        AppModule,
-        new ExpressAdapter(server),
-        {
-            cors: {
-                origin: [
-                    'http://account.skymetric.kz',
-                    'http://skymetric.kz',
-                    'https://account.skymetric.kz',
-                    'https://skymetric.kz',
-                    'https://kaspi.kz',
-                    'http://localhost:' + httpPort,
-                    'http://127.0.0.1:' + httpPort,
-                ],
-            },
+    const app = await NestFactory.create(AppModule, {
+        cors: {
+            origin: [
+                'http://account.skymetric.kz',
+                'http://skymetric.kz',
+                'https://account.skymetric.kz',
+                'https://skymetric.kz',
+                'https://kaspi.kz',
+                'http://localhost:' + httpPort,
+                'http://127.0.0.1:' + httpPort,
+            ],
         },
-    );
+    });
+    app.use(bodyParser.json({ limit: '50mb' }));
+    app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
     app.use(
         ['/docs'],
         basicAuth({
@@ -58,21 +50,9 @@ async function bootstrap() {
         .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('docs', app, document);
-    //await app.init();
-
     await app.listen(httpPort, () =>
         console.log('Server started on port ' + httpPort),
     );
-    /*
-    http.createServer(server).listen(httpPort);
-    if (httpsPort) {
-        const httpsOptions = {
-            key: fs.readFileSync(appConf.appCertificate.key),
-            cert: fs.readFileSync(appConf.appCertificate.cert),
-        };
-        https.createServer(httpsOptions, server).listen(httpsPort);
-    }
-    */
 }
 
 bootstrap();

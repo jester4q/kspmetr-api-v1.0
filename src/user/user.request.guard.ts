@@ -1,3 +1,4 @@
+import limitConfig from '../config/limits.config';
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import {
     BadRequestException,
@@ -8,6 +9,7 @@ import { TSessionUser } from 'src/auth/token/authToken.service';
 import { User } from 'src/db/entities';
 import { LogService } from 'src/log/log.service';
 import { UserService } from 'src/user/user.service';
+import limitsConfig from '../config/limits.config';
 
 const POST_PRODUCT_QUERY = 'POST /api/products/detailed';
 const GET_PRODUCT_DETAILS_QUERY = 'GET /api/product-details';
@@ -79,6 +81,7 @@ export class UserRequestGuard implements CanActivate {
             query,
             1,
         );
+        /*
         if (count > 10) {
             throw new ForbiddenException('Too Many requests for last minute');
         }
@@ -86,9 +89,16 @@ export class UserRequestGuard implements CanActivate {
         if (count > 200) {
             throw new ForbiddenException('Too Many requests for last hour');
         }
-        count = await this.logService.countRequestForDay(user.id, query, 1);
-        if (count > 10000) {
-            throw new ForbiddenException('Too Many requests for last 24 hours');
+        */
+        const limits = limitsConfig();
+        console.log(limits, limits.requestsPerDay);
+        if (limits.requestsPerDay >= 0) {
+            count = await this.logService.countRequestForDay(user.id, query, 1);
+            if (count > limits.requestsPerDay) {
+                throw new ForbiddenException(
+                    'Too Many requests for last 24 hours',
+                );
+            }
         }
     }
 }

@@ -66,4 +66,7 @@ export class Product extends BaseEntity {
 
     @Column()
     sessionId: number;
+
+    @Column()
+    position: number;
 }

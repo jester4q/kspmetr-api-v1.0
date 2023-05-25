@@ -38,4 +38,11 @@ export class AddProductRequestDTO {
     @IsNotEmpty()
     @IsObject()
     categories: ProductCategoryPathDto;
+
+    @ApiProperty({
+        description: 'Product category',
+    })
+    @IsNotEmpty()
+    @Validate(IsNumberOrString)
+    position: number;
 }

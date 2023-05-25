@@ -23,6 +23,8 @@ export interface IAddProductModel {
 
     categoryId: number;
 
+    position: number;
+
     isValid(): boolean;
 }
 
@@ -298,6 +300,16 @@ export class AddProductModel implements IAddProductModel {
         const path = this.cartegoryPath;
         return (path && (path.level4 || path.level3 || path.level2)) || 0;
     }
+
+    public get position(): number {
+        if (!isNumber(this.data.position)) {
+            return undefined;
+        }
+        if (typeof this.data.position === 'string') {
+            this.data.position = parseInt(this.data.position);
+        }
+        return this.data.position;
+    }
 }
 
 export class AddDetailedProductModel
@@ -348,5 +360,9 @@ export class AddDetailedProductModel
 
     public get categoryName(): TCategoryName {
         return this.data.categoryName || undefined;
+    }
+
+    public get position(): number {
+        return undefined;
     }
 }

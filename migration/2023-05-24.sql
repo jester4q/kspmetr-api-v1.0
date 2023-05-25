@@ -1,0 +1,1 @@
+ALTER TABLE `products` ADD `position` INT UNSIGNED NOT NULL AFTER `galleryImages`;
