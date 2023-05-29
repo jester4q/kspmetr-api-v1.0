@@ -43,7 +43,7 @@ export class ProductListController {
         @Query() query: GetCategoryProductsQueryDto,
     ): Promise<GetCategoryProductsResponseDto> {
         let category;
-        const { reverse } = query;
+        const { reverse, depth } = query;
         try {
             category = await this.categoryService.fetchTree(categoryId);
         } catch (e) {
@@ -61,6 +61,7 @@ export class ProductListController {
             try {
                 const products = await this.productService.fetchAllInCategory(
                     categoryIds,
+                    depth,
                     reverse,
                 );
                 return { items: products };

@@ -134,7 +134,7 @@ export class ProductReviewDto {
     @ApiProperty({
         description: 'External review id',
     })
-    externalId: string;
+    id: string;
 }
 
 export class ProductCategoryPathDto {

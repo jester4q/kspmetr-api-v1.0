@@ -230,7 +230,7 @@ export class ProductModel implements IProductModel {
             return this.data.reviews.map((x) => ({
                 author: x.author,
                 date: strToDate(x.date),
-                id: x.externalId,
+                externalId: x.id,
                 rating: x.rating,
             }));
         }

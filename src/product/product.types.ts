@@ -57,5 +57,5 @@ export type TProductReview = {
     author: string;
     date: Date | null;
     rating: number;
-    id: string;
+    externalId: string;
 };

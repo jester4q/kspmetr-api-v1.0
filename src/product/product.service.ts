@@ -71,27 +71,38 @@ export class ProductService {
 
     public async fetchAllInCategory(
         categoryIds: number[],
+        depth: number = 0,
         reverse: boolean = false,
     ): Promise<TCategoryProduct[]> {
         try {
-            const products1 = await this.productRepository
+            let bulder = await this.productRepository
                 .createQueryBuilder()
                 .where('`Product`.categoryId in (:...ids)', {
                     ids: categoryIds,
                 })
                 .andWhere('(`Product`.status=1 OR `Product`.attempt < 4)')
-                .andWhere('`Product`.lastCheckedAt IS NOT NULL')
-                .orderBy('`Product`.lastCheckedAt', reverse ? 'DESC' : 'ASC')
-                .getMany();
-            const products2 = await this.productRepository
+                .andWhere('`Product`.lastCheckedAt IS NOT NULL');
+            if (depth > 0) {
+                bulder.andWhere(
+                    '`Product`.position > 0 AND `Product`.position <= ' + depth,
+                );
+            }
+            bulder.orderBy('`Product`.lastCheckedAt', reverse ? 'DESC' : 'ASC');
+            const products1 = await bulder.getMany();
+            bulder = this.productRepository
                 .createQueryBuilder()
                 .where('`Product`.categoryId in (:...ids)', {
                     ids: categoryIds,
                 })
                 .andWhere('(`Product`.status=1 OR `Product`.attempt < 4)')
-                .andWhere('`Product`.lastCheckedAt IS NULL')
-                .orderBy('`Product`.id', reverse ? 'DESC' : 'ASC')
-                .getMany();
+                .andWhere('`Product`.lastCheckedAt IS NULL');
+            if (depth > 0) {
+                bulder.andWhere(
+                    '`Product`.position > 0 AND `Product`.position <= ' + depth,
+                );
+            }
+            bulder.orderBy('`Product`.id', reverse ? 'DESC' : 'ASC');
+            const products2 = await bulder.getMany();
             return (
                 reverse
                     ? [...products2, ...products1]
@@ -198,7 +209,6 @@ export class ProductService {
             parsingId: source.parsingId,
             sessionId: session.sessionId,
         };
-
         if (source.reviews && !source.hasReviewsError) {
             let rating;
             try {
@@ -379,7 +389,7 @@ export class ProductService {
                 author: review.author,
                 date: review.date,
                 rating: review.rating,
-                externalId: review.id,
+                externalId: review.externalId,
                 sessionId: session.sessionId,
             }));
             await this.reviewRepository
