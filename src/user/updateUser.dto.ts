@@ -3,9 +3,9 @@ import { IsEmail, IsOptional, Length, Matches } from 'class-validator';
 import { PASSWORD_RULE } from './rules';
 import { UserRoleEnum } from './types';
 import { IsAlreadyRegister } from './isAlreadyRegister.validation';
-import { ContextAwareDto } from 'src/context-aware.dto';
+import { ApiContextAwareDto } from '../common/context-aware.dto';
 
-export class UpdateUserRequestDto extends ContextAwareDto {
+export class UpdateUserRequestDto extends ApiContextAwareDto {
     @ApiProperty({
         description: 'The email address of the User',
         example: 'jhon.doe@gmail.com',

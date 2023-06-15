@@ -1,8 +1,8 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 
 import { Request, Response, NextFunction } from 'express';
-import { Logger } from './log/logger';
-import { dateTimeToStr } from './utils';
+import { Logger } from '../log/logger';
+import { dateTimeToStr } from '../../utils';
 import { OutgoingHttpHeaders } from 'http2';
 
 type TResponseLog = {
@@ -16,7 +16,7 @@ type TResponseLog = {
 };
 
 @Injectable()
-export class AppLoggerMiddleware implements NestMiddleware {
+export class LoggerMiddleware implements NestMiddleware {
     private logger = new Logger('api');
 
     use(request: Request, response: Response, next: NextFunction): void {
@@ -82,11 +82,16 @@ export function getResponseLog(
             chunkBuffers.push(Buffer.from(resArgs[0]));
         }
         const body = Buffer.concat(chunkBuffers).toString('utf8');
-        let responseBody = '{...}';
+        let responseBody: any = '{...}';
         rawResponseEnd.apply(response, resArgs);
         const { statusCode, statusMessage } = response;
         const contentLength: number = parseInt(response.get('content-length'));
-        responseBody = JSON.parse(body) || body || {};
+        try {
+            responseBody = JSON.parse(body);
+        } catch (_) {
+            console.log('Culd not JSON parse: ' + body);
+            responseBody = body || {};
+        }
         const responseLog: TResponseLog = {
             response: {
                 statusCode: statusCode,

@@ -9,16 +9,16 @@ import {
     Seller,
     ProductToSeller,
     ProductReview,
-} from '../db/entities';
+} from '../common/db/entities';
 import { UserModule } from '../user/user.module';
-import { LogModule } from 'src/log/log.module';
+import { TrackingModule } from '../tracking/tracking.module';
 import { ProductListController } from './product.list.controller';
 
 @Module({
     imports: [
         CategoryModule,
         UserModule,
-        LogModule,
+        TrackingModule,
         TypeOrmModule.forFeature([
             Product,
             ProductHistory,

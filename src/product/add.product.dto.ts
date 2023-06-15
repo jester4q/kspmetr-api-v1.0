@@ -1,12 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ProductCategoryPathDto } from './product.dto';
-import {
-    IsNotEmpty,
-    IsNumber,
-    IsObject,
-    IsString,
-    Validate,
-} from 'class-validator';
+import { IsNotEmpty, IsObject, IsString, Validate } from 'class-validator';
 import { IsNumberOrString } from './numberOrString.validator';
 
 export class AddProductRequestDTO {

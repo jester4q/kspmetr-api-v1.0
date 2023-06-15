@@ -1,13 +1,5 @@
+import { Controller, Get, Query, UseGuards, Request } from '@nestjs/common';
 import {
-    BadRequestException,
-    Controller,
-    Get,
-    Query,
-    UseGuards,
-    Request,
-} from '@nestjs/common';
-import {
-    ApiBadRequestResponse,
     ApiCreatedResponse,
     ApiQuery,
     ApiSecurity,
@@ -22,7 +14,6 @@ import {
 import { ProductUrlPipe } from './productUrl.pipe';
 import { ProductPeriodPipe } from './productPeriod.pipe';
 import { ProductDataTypesPipe } from './productDataTypes.pipe';
-import { LogService } from 'src/log/log.service';
 import { NotFoundException } from '@nestjs/common/exceptions';
 import { ProductModePipe } from './productMode.pipe';
 import { UserRolesGuard } from 'src/user/roles/roles.guard';
@@ -39,10 +30,7 @@ import { UserRoleEnum } from 'src/user/types';
 @ApiSecurity('bearer')
 @UseGuards(AuthTokenGuard, UserRolesGuard)
 export class ProductDetailsController {
-    constructor(
-        private productService: ProductDetailsService,
-        private logService: LogService,
-    ) {}
+    constructor(private productService: ProductDetailsService) {}
 
     @Get('?')
     @HasRoles(UserRoleEnum.siteUser, UserRoleEnum.chromeExtension)
@@ -110,7 +98,7 @@ export class ProductDetailsController {
             galleryImages:
                 (product.galleryImages &&
                     product.galleryImages.reduce((r: string[], item) => {
-                        r.push(...Object.values(item));
+                        r.push(...(Object.values(item) as string[]));
                         return r;
                     }, [])) ||
                 [],

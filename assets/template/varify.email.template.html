@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <style type="text/css">
+            .page {
+                width: 100% !important;
+                min-width: 100%;
+                margin: 0;
+                padding: 0;
+                -webkit-text-size-adjust: 100%;
+                -ms-text-size-adjust: 100%;
+                font-weight: normal;
+                padding: 0;
+                margin: 0;
+                text-align: left;
+                font-family: Roboto, Arial;
+
+                font-size: 13px;
+                line-height: 15.6px;
+            }
+            .table {
+                border-spacing: 0;
+                border-collapse: collapse;
+            }
+
+            .td {
+                word-break: break-word;
+                -webkit-hyphens: auto;
+                -moz-hyphens: auto;
+                hyphens: auto;
+                border-collapse: collapse !important;
+            }
+            .table,
+            .tr,
+            .td {
+                padding: 0;
+                vertical-align: top;
+                text-align: left;
+            }
+
+            .p,
+            .h3 {
+                padding: 0;
+                margin: 0;
+            }
+
+            .page__table {
+                border-spacing: 0;
+                border-collapse: collapse;
+                vertical-align: top;
+                color: #172b4d;
+                font-weight: normal;
+                padding: 0;
+                margin: 0;
+                text-align: left;
+            }
+
+            .page__center {
+                word-break: break-word;
+                vertical-align: top;
+                padding: 0;
+                margin: 0;
+                text-align: center;
+                border-collapse: collapse;
+            }
+
+            .page__wraper {
+                display: block;
+                margin: 0 auto;
+                max-width: 600px;
+                width: 600px;
+            }
+
+            .main {
+                border-radius: 8px;
+                border: none;
+                height: 596px;
+                max-height: 596px;
+                background: linear-gradient(0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15)), rgba(31, 29, 178, 0.05);
+            }
+
+            .main > table {
+                width: 100%;
+            }
+
+            .header {
+                height: 70px;
+                width: 100%;
+                border-radius: 8px;
+                border: none;
+                background-image: url('%URL%email.header.bg.png');
+            }
+
+            .header__title {
+                font-style: normal;
+                font-weight: 500;
+                font-size: 24px;
+                line-height: 33px;
+                color: #fafafa;
+                padding: 18px 24px 19px;
+                margin: 0;
+            }
+
+            .content__wrapper {
+                padding: 40px 72px;
+                height: 100%;
+                min-height: 100%;
+            }
+
+            .content {
+                background: #ffffff;
+                border: 1px solid #ffffff;
+                border-radius: 8px;
+                height: 380px;
+                min-height: 380px;
+                padding: 32px 24px;
+
+                font-weight: 400;
+                font-size: 13px;
+                line-height: 16px;
+                color: #373737;
+            }
+
+            .content h3 {
+                font-weight: 500;
+                font-size: 16px;
+                line-height: 20px;
+                color: #373737;
+                margin: 0px;
+            }
+
+            .content td {
+                padding-bottom: 24px;
+            }
+
+            .td_button {
+                line-height: 40px;
+            }
+
+            .telegram {
+                text-decoration: none;
+                white-space: nowrap;
+                line-height: 24px;
+            }
+
+            .button {
+                text-decoration: none !important;
+                font-weight: bold !important;
+                width: 100%;
+                padding: 11.5px 27px;
+                white-space: nowrap;
+                background: #04b937;
+                border-radius: 8px;
+                font-weight: 500 !important;
+                font-size: 16px !important;
+                line-height: 20px;
+                color: #fafafa !important;
+            }
+
+            .footer-text {
+                font-style: normal;
+                font-weight: 400;
+                font-size: 11px;
+                line-height: 13px;
+                text-align: center;
+                color: #373737;
+                padding: 24px 72px;
+            }
+        </style>
+    </head>
+    <body class="page">
+        <table class="table page__table" width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tbody>
+                <tr class="tr">
+                    <td class="td page__center">
+                        <div class="page__wraper">
+                            <div class="main">
+                                <table class="table">
+                                    <tbody>
+                                        <tr class="tr">
+                                            <td class="td">
+                                                <div class="header">
+                                                    <h1 class="header__title">SkyMetric</h1>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="tr">
+                                            <td class="td content__wrapper">
+                                                <div class="content">
+                                                    <table class="table">
+                                                        <tbody>
+                                                            <tr class="tr">
+                                                                <td class="td" colspan="2">
+                                                                    <h3 class="h3">Подтверждение регистрации</h3>
+                                                                </td>
+                                                            </tr>
+                                                            <tr class="tr">
+                                                                <td class="td" colspan="2">
+                                                                    <p class="p">Здравствуйте!</p>
+                                                                    <br />
+                                                                    <p class="p">Вы успешно зарегистрировались в сервисе SkyMetric.</p>
+                                                                    <br class="p" />
+                                                                    <p class="p">Пожалуйста, подтвердите свою почту, кликнув по кнопке ниже:</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr class="tr">
+                                                                <td class="td td_button" style="text-align: center" colspan="2">
+                                                                    <a class="button" target="_blank" href="%VERIFYURL%">Подтвердить</a>
+                                                                </td>
+                                                            </tr>
+
+                                                            <tr class="tr">
+                                                                <td class="td" style="padding-bottom: 0px" colspan="2">
+                                                                    <p class="p">С уважением,</p>
+                                                                    <br />
+                                                                    <p class="p">Команда SkyMetric</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr class="tr">
+                                                                <td class="td" style="padding-bottom: 0px" colspan="2">
+                                                                    <hr size="1" color="#D1D1D1" style="margin: 20px 0" />
+                                                                </td>
+                                                            </tr>
+                                                            <tr class="tr">
+                                                                <td class="td" style="padding-bottom: 10px" colspan="2">
+                                                                    <p class="p">Подписывайтесь на нас в Telegram и первые узнавайте обо всех обновлениях нашего сервиса:</p>
+                                                                </td>
+                                                            </tr>
+                                                            <tr class="tr">
+                                                                <td class="td" style="vertical-align: middle; width: 24px; padding-bottom: 0">
+                                                                    <a class="telegram" target="_blank" href="https://t.me/skymetric"> <img style="display: block; border: 0; height: auto; outline: none; text-decoration: none" src="%URL%telegram.ico.png" /></a>
+                                                                </td>
+                                                                <td></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="page__wraper">
+                            <table class="table footer">
+                                <tbody>
+                                    <tr class="tr">
+                                        <td class="td footer-text">
+                                            <p class="p">Вы получили это письмо, потому что зарегистрировались в сервисе «SkyMetric»</p>
+                                            <br />
+                                            <p class="p">Если вы больше не хотите получать письма от нас, вы можете отписаться</p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>

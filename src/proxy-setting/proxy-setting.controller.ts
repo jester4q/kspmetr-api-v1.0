@@ -5,8 +5,6 @@ import {
     UseGuards,
     Param,
     Body,
-    InternalServerErrorException,
-    BadRequestException,
 } from '@nestjs/common';
 import {
     ApiBearerAuth,
@@ -39,14 +37,8 @@ export class ProxySettingController {
         type: GetProxySettingsResponseDTO,
     })
     async list(): Promise<GetProxySettingsResponseDTO> {
-        try {
-            const settings = await this.proxySettingService.fetchAll();
-            return { items: settings };
-        } catch (error) {
-            throw new InternalServerErrorException(
-                'Could not get proxy settings',
-            );
-        }
+        const settings = await this.proxySettingService.fetchAll();
+        return { items: settings };
     }
 
     @Delete('/:id')
@@ -55,21 +47,9 @@ export class ProxySettingController {
     async delete(
         @Param('id') id,
         @Body() req: DeleteProxySettingsRequestDTO,
-    ): Promise<{ id: number }> {
-        try {
-            const proxy = await this.proxySettingService.fetchOne(id);
-        } catch (e) {
-            throw new BadRequestException(
-                'There is no proxy setings with id ' + id,
-            );
-        }
-        try {
-            await this.proxySettingService.delete(id, req.reason);
-        } catch (e) {
-            throw new InternalServerErrorException(
-                'Could not delete proxy settings by id ' + id,
-            );
-        }
-        return { id: id };
+    ): Promise<{ success: boolean }> {
+        // const proxy = await this.proxySettingService.fetchOne(id);
+        const result = await this.proxySettingService.delete(id, req.reason);
+        return { success: result };
     }
 }

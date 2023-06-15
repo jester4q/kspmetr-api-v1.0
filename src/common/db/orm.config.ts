@@ -11,6 +11,7 @@ import {
     UserAgent,
     Log,
     ProductRequest,
+    EmailVerification,
 } from './entities';
 
 export const entites = [
@@ -26,4 +27,5 @@ export const entites = [
     User,
     Log,
     ProductRequest,
+    EmailVerification,
 ];

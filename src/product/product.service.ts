@@ -2,24 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TCategoryProduct, TProduct } from './product.types';
-import { Logger } from 'src/log/logger';
-import {
-    AddDetailedProductModel,
-    AddProductModel,
-    IAddDetailedProductModel,
-    IAddProductModel,
-    IProductModel,
-    ProductModel,
-} from './product.model';
-import {
-    Product,
-    ProductHistory,
-    ProductReview,
-    ProductToSeller,
-    Seller,
-} from '../db/entities';
+import { Logger } from '../common/log/logger';
+import { IAddDetailedProductModel, IAddProductModel, IProductModel } from './product.model';
+import { Product, ProductHistory, ProductReview, ProductToSeller, Seller } from '../common/db/entities';
 import { TSessionUser } from 'src/auth/token/authToken.service';
 import { CategoryService } from 'src/category/category.service';
+import { ApiError } from 'src/common/error';
 
 export enum DataTypesEnum {
     prices = 'prices',
@@ -58,73 +46,46 @@ export class ProductService {
     ) {}
 
     public async fetchOne(id: number): Promise<TProduct> {
-        try {
-            const product = await this.productRepository.findOneBy({
-                id: id,
-            });
-            return this.toProduct(product);
-        } catch (error) {
-            this.logger.log(JSON.stringify(error));
-            throw error;
-        }
+        const product = await this.productRepository.findOneBy({
+            id: id,
+        });
+        return this.toProduct(product);
     }
 
-    public async fetchAllInCategory(
-        categoryIds: number[],
-        depth: number = 0,
-        reverse: boolean = false,
-    ): Promise<TCategoryProduct[]> {
-        try {
-            let bulder = await this.productRepository
-                .createQueryBuilder()
-                .where('`Product`.categoryId in (:...ids)', {
-                    ids: categoryIds,
-                })
-                .andWhere('(`Product`.status=1 OR `Product`.attempt < 4)')
-                .andWhere('`Product`.lastCheckedAt IS NOT NULL');
-            if (depth > 0) {
-                bulder.andWhere(
-                    '`Product`.position > 0 AND `Product`.position <= ' + depth,
-                );
-            }
-            bulder.orderBy('`Product`.lastCheckedAt', reverse ? 'DESC' : 'ASC');
-            const products1 = await bulder.getMany();
-            bulder = this.productRepository
-                .createQueryBuilder()
-                .where('`Product`.categoryId in (:...ids)', {
-                    ids: categoryIds,
-                })
-                .andWhere('(`Product`.status=1 OR `Product`.attempt < 4)')
-                .andWhere('`Product`.lastCheckedAt IS NULL');
-            if (depth > 0) {
-                bulder.andWhere(
-                    '`Product`.position > 0 AND `Product`.position <= ' + depth,
-                );
-            }
-            bulder.orderBy('`Product`.id', reverse ? 'DESC' : 'ASC');
-            const products2 = await bulder.getMany();
-            return (
-                reverse
-                    ? [...products2, ...products1]
-                    : [...products1, ...products2]
-            ).map((item) => this.toCategoryProduct(item));
-        } catch (error) {
-            this.logger.log(JSON.stringify(error));
-            throw error;
+    public async fetchAllInCategory(categoryIds: number[], depth: number = 0, reverse: boolean = false): Promise<TCategoryProduct[]> {
+        let bulder = await this.productRepository
+            .createQueryBuilder()
+            .where('`Product`.categoryId in (:...ids)', {
+                ids: categoryIds,
+            })
+            .andWhere('(`Product`.status=1 OR `Product`.attempt < 4)')
+            .andWhere('`Product`.lastCheckedAt IS NOT NULL');
+        if (depth > 0) {
+            bulder.andWhere('`Product`.position > 0 AND `Product`.position <= ' + depth);
         }
+        bulder.orderBy('`Product`.lastCheckedAt', reverse ? 'DESC' : 'ASC');
+        const products1 = await bulder.getMany();
+        bulder = this.productRepository
+            .createQueryBuilder()
+            .where('`Product`.categoryId in (:...ids)', {
+                ids: categoryIds,
+            })
+            .andWhere('(`Product`.status=1 OR `Product`.attempt < 4)')
+            .andWhere('`Product`.lastCheckedAt IS NULL');
+        if (depth > 0) {
+            bulder.andWhere('`Product`.position > 0 AND `Product`.position <= ' + depth);
+        }
+        bulder.orderBy('`Product`.id', reverse ? 'DESC' : 'ASC');
+        const products2 = await bulder.getMany();
+        return (reverse ? [...products2, ...products1] : [...products1, ...products2]).map((item) => this.toCategoryProduct(item));
     }
 
-    public async addAndUpdate(
-        session: TSessionUser,
-        model: IAddDetailedProductModel,
-    ) {
+    public async addAndUpdate(session: TSessionUser, model: IAddDetailedProductModel) {
         if (!model.isValid()) {
-            throw new Error('Culd not add/update product by this data');
+            throw new ApiError('Culd not add/update product by this data');
         }
 
-        const categoryPath = await this.categoryService.addPath(
-            model.categoryName,
-        );
+        const categoryPath = await this.categoryService.addPath(model.categoryName);
         model.setCategories(categoryPath);
         const product = await this.productRepository.findOneBy({
             code: model.code,
@@ -137,12 +98,9 @@ export class ProductService {
         return this.save(session, model.id, model);
     }
 
-    public async add(
-        session: TSessionUser,
-        source: IAddProductModel,
-    ): Promise<TProduct> {
+    public async add(session: TSessionUser, source: IAddProductModel): Promise<TProduct> {
         if (!source.isValid()) {
-            throw new Error('Culd not add product by this data');
+            throw new ApiError('Culd not add product by this data');
         }
 
         let product = await this.productRepository.findOneBy({
@@ -170,31 +128,16 @@ export class ProductService {
         return this.toProduct(product);
     }
 
-    public async save(
-        session: TSessionUser,
-        productId: number,
-        source: IProductModel,
-    ): Promise<TProduct> {
+    public async save(session: TSessionUser, productId: number, source: IProductModel): Promise<TProduct> {
         if (!source.isValid()) {
-            throw new Error('Culd not save product data');
+            throw new ApiError('Culd not save product data');
         }
-        let product;
-        try {
-            product = await this.productRepository.findOneBy({
-                id: productId,
-            });
-        } catch (error) {
-            this.logger.log(JSON.stringify(error));
-            throw error;
-        }
+        let product = await this.productRepository.findOneBy({
+            id: productId,
+        });
 
         if (source.isNotFound) {
-            try {
-                await this.markProductAsFail(product, source.getErrorMessage);
-            } catch (error) {
-                this.logger.log(JSON.stringify(error));
-                throw error;
-            }
+            await this.markProductAsFail(product, source.getErrorMessage);
             return;
         }
 
@@ -210,27 +153,17 @@ export class ProductService {
             sessionId: session.sessionId,
         };
         if (source.reviews && !source.hasReviewsError) {
-            let rating;
-            try {
-                rating = await this.saveReviews(session, source, productId);
-            } catch (error) {
-                this.logger.log('saveReviews: ' + JSON.stringify(error));
-                throw error;
-            }
+            const { rating, quantity } = await this.saveReviews(session, source, productId);
             product.productRating = rating;
             history.productRating = rating;
+            product.reviewsQuantity = quantity;
+            history.reviewsQuantity = quantity;
         }
         if (source.description && !source.hasDescriptionError) {
             product.description = source.description;
         }
         if (source.sellers && !source.hasSellersError) {
-            let sellers;
-            try {
-                sellers = await this.saveSeller(session, source, productId);
-            } catch (error) {
-                this.logger.log('saveSeller: ' + JSON.stringify(error));
-                throw error;
-            }
+            let sellers = await this.saveSeller(session, source, productId);
             history.productSellers = sellers;
         }
         if (product.unitPrice !== undefined) {
@@ -250,39 +183,24 @@ export class ProductService {
             if (source.galleryImages) {
                 product.galleryImages = source.galleryImages;
             }
+            /*
             if (source.reviewsQuantity !== undefined) {
                 product.reviewsQuantity = source.reviewsQuantity;
                 history.reviewsQuantity = source.reviewsQuantity;
             }
+            */
         }
-        if (
-            source.specification !== undefined &&
-            !source.hasSpecificationError
-        ) {
+        if (source.specification !== undefined && !source.hasSpecificationError) {
             product.specification = source.specification;
         }
-        try {
-            await product.save();
-        } catch (error) {
-            this.logger.log('Save product ' + JSON.stringify(error));
-            throw error;
-        }
+        await product.save();
 
-        try {
-            await this.historyRepository.save(history);
-        } catch (error) {
-            this.logger.log('Save history ' + JSON.stringify(error));
-            throw error;
-        }
+        await this.historyRepository.save(history);
 
         return this.toProduct(product);
     }
 
-    private async saveSeller(
-        session: TSessionUser,
-        product: IProductModel,
-        productId: number,
-    ): Promise<{ sellerId: number; price: number }[]> {
+    private async saveSeller(session: TSessionUser, product: IProductModel, productId: number): Promise<{ sellerId: number; price: number }[]> {
         const sellers = product.sellers;
         if (!sellers.length) {
             return [];
@@ -302,10 +220,7 @@ export class ProductService {
             toSelect.push(item.id);
             codeAndPrice[item.id] = item.price;
         });
-        const items = await this.sellerRepository
-            .createQueryBuilder()
-            .where('code IN(:...ids)', { ids: toSelect })
-            .getMany();
+        const items = await this.sellerRepository.createQueryBuilder().where('code IN(:...ids)', { ids: toSelect }).getMany();
         const itemsByCode: Seller[] = [];
         items.forEach((item) => {
             itemsByCode[item.code] = item;
@@ -376,11 +291,7 @@ export class ProductService {
         return result;
     }
 
-    private async saveReviews(
-        session: TSessionUser,
-        product: IProductModel,
-        productId: number,
-    ): Promise<number> {
+    private async saveReviews(session: TSessionUser, product: IProductModel, productId: number): Promise<{ rating: number; quantity: number }> {
         if (product.reviews.length) {
             const productCode = product.code;
             const reviews = product.reviews.map((review) => ({
@@ -392,18 +303,17 @@ export class ProductService {
                 externalId: review.externalId,
                 sessionId: session.sessionId,
             }));
-            await this.reviewRepository
-                .createQueryBuilder()
-                .insert()
-                .into(this.reviewRepository.target)
-                .values(reviews)
-                .orIgnore()
-                .execute();
+            await this.reviewRepository.createQueryBuilder().insert().into(this.reviewRepository.target).values(reviews).orIgnore().execute();
         }
-        const result = await this.reviewRepository.average('rating', {
+        const rating = await this.reviewRepository.average('rating', {
             productId: productId,
         });
-        return result || 0;
+        const quantity = await this.reviewRepository.count({
+            where: {
+                productId: productId,
+            },
+        });
+        return { rating, quantity };
     }
 
     private async markProductAsFail(product: Product, reason: string) {

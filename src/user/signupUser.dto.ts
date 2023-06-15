@@ -24,7 +24,7 @@ export class SignupUserRequestDto {
         description: 'The email address of the User',
         example: 'jhon.doe@gmail.com',
     })
-    @IsNotEmpty()
+    @IsOptional()
     @Length(32, 32)
     @Matches(FINGERPRINT_RULE.value, { message: FINGERPRINT_RULE.message })
     @IsAlreadyRegister()

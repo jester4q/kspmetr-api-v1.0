@@ -7,8 +7,8 @@ import {
     ValidatorConstraintInterface,
 } from 'class-validator';
 import { UserService } from './user.service';
-import { User } from 'src/db/entities';
-import { ContextAwareDto } from 'src/context-aware.dto';
+import { User } from '../common/db/entities';
+import { ApiContextAwareDto } from '../common/context-aware.dto';
 
 @Injectable()
 @ValidatorConstraint({ name: 'isAlreadyRegister', async: true })
@@ -21,7 +21,7 @@ export class IsAlreadyRegisterValidation
         const { object, property } = args;
         const dto: { email?: string; id?: number; fingerprint?: string } =
             object as unknown;
-        dto.id = (object as ContextAwareDto).context?.id || 0;
+        dto.id = (object as ApiContextAwareDto).context?.id || 0;
 
         let userExist: User = null;
 

@@ -1,9 +1,9 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 
 import { Request, Response, NextFunction } from 'express';
-import { getResponseLog } from 'src/appLogger.middleware';
 import { ProductRequestService } from './productRequest.service';
-import { TSessionUser } from 'src/auth/token/authToken.service';
+import { TSessionUser } from '../auth/token/authToken.service';
+import { getResponseLog } from '../common/log/logger.middleware';
 
 @Injectable()
 export class productRequestLoggerMiddleware implements NestMiddleware {

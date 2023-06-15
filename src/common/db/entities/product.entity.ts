@@ -2,7 +2,7 @@ import {
     TCategoryPath,
     TProductImage,
     TProductSpecification,
-} from '../../product/product.types';
+} from '../../../product/product.types';
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
 
 @Entity('products')

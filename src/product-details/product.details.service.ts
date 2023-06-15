@@ -1,9 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Between, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Product } from '../db/entities/product.entity';
-import { ProductHistory } from '../db/entities/productHistory.entity';
-import { dateTimeToStr, dateToStr } from '../utils';
+import { Product } from '../common/db/entities/product.entity';
+import { ProductHistory } from '../common/db/entities/productHistory.entity';
+import { dateToStr } from '../utils';
 
 export enum DataTypesEnum {
     prices = 'prices',

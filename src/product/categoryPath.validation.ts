@@ -1,8 +1,4 @@
-import {
-    BadRequestException,
-    Injectable,
-    UnprocessableEntityException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 import {
     ValidatorConstraint,

@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { TCategoryPath } from './product.types';
 
 export class ProductDto {
     @ApiProperty({

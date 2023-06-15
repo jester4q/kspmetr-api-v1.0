@@ -3,11 +3,11 @@ const moment = require('moment');
 import { Injectable } from '@nestjs/common';
 import { Like, MoreThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Log } from '../db/entities';
+import { Log } from '../common/db/entities';
 import { TSessionUser } from 'src/auth/token/authToken.service';
 
 @Injectable()
-export class LogService {
+export class TrackingService {
     constructor(
         @InjectRepository(Log)
         private logRepository: Repository<Log>,

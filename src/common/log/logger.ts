@@ -17,6 +17,10 @@ export class Logger {
         }
     }
 
+    error(error) {
+        this.log(`Error: ${error.code} -- ${error.message}`);
+    }
+
     log(message: string) {
         const msg = `${this.line()}\n${message}\n${this.line()}\n\n`;
 

@@ -17,7 +17,6 @@ import {
 import { AuthTokenGuard } from 'src/auth/token/authToken.guard';
 import { ProductService } from './product.service';
 import { InternalServerErrorException } from '@nestjs/common/exceptions';
-import { CategoryService } from 'src/category/category.service';
 import {
     AddDetailedProductModel,
     AddProductModel,

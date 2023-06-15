@@ -1,15 +1,11 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import {
     ValidationArguments,
     ValidatorConstraint,
     ValidatorConstraintInterface,
 } from 'class-validator';
-import {
-    ProductImageDto,
-    ProductSellerDTO,
-    ProductSpecificationDto,
-} from './product.dto';
+import { ProductSellerDTO } from './product.dto';
 
 @ValidatorConstraint({ name: 'SellersValidation', async: false })
 @Injectable()

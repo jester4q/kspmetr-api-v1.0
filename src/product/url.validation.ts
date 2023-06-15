@@ -1,17 +1,10 @@
-import {
-    BadRequestException,
-    Injectable,
-    UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 
 import {
     ValidationArguments,
     ValidatorConstraint,
     ValidatorConstraintInterface,
 } from 'class-validator';
-import { CategoryService } from 'src/category/category.service';
-import { ProductCategoryPathDto, ProductImageDto } from './product.dto';
-import { ECDH } from 'crypto';
 
 @ValidatorConstraint({ name: 'ProductUrlValidation', async: false })
 @Injectable()

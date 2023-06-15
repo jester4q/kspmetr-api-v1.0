@@ -2,13 +2,15 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { User } from '../db/entities';
+import { EmailVerification, User } from '../common/db/entities';
 import { UserRequestGuard } from './user.request.guard';
-import { LogModule } from '../log/log.module';
+import { TrackingModule } from '../tracking/tracking.module';
 import { IsAlreadyRegisterValidation } from './isAlreadyRegister.validation';
+import { JwtModule } from '@nestjs/jwt';
+import { jwtConfig } from 'src/common/config/jwt.config';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([User]), LogModule],
+    imports: [TypeOrmModule.forFeature([User, EmailVerification]), TrackingModule, JwtModule.registerAsync(jwtConfig)],
     controllers: [UserController],
     exports: [UserService, UserRequestGuard],
     providers: [UserService, UserRequestGuard, IsAlreadyRegisterValidation],

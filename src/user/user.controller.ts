@@ -1,21 +1,7 @@
-import {
-    Body,
-    Get,
-    InternalServerErrorException,
-    Param,
-    Patch,
-    Post,
-    UseGuards,
-} from '@nestjs/common';
+import { Body, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { Controller } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
-import {
-    ApiBadRequestResponse,
-    ApiBearerAuth,
-    ApiCreatedResponse,
-    ApiSecurity,
-    ApiTags,
-} from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { AuthTokenGuard } from '../auth/token/authToken.guard';
 import { UserResultDto } from './user.dto';
 import { UserService } from './user.service';
@@ -24,7 +10,7 @@ import { AddUserRequestDto } from './addUser.dto';
 import { UpdateUserRequestDto } from './updateUser.dto';
 import { UserRoleEnum } from './types';
 import { HasRoles } from './roles/roles.decorator';
-import { User } from '../db/entities';
+import { User } from '../common/db/entities';
 import { UserRolesGuard } from './roles/roles.guard';
 import { TSessionUser } from '../auth/token/authToken.service';
 import { SignupUserRequestDto } from './signupUser.dto';
@@ -66,12 +52,8 @@ export class UserController {
         description: 'Culd not add new user',
     })
     async addUser(@Body() req: AddUserRequestDto): Promise<UserResultDto> {
-        try {
-            const user = await this.userService.add(req);
-            return this.mapUserToDto(user);
-        } catch (error) {
-            throw new InternalServerErrorException(error.message);
-        }
+        const user = await this.userService.add(req);
+        return this.mapUserToDto(user);
     }
 
     @Post('/signup')
@@ -82,18 +64,14 @@ export class UserController {
     @ApiBadRequestResponse({
         description: 'Culd not add new user',
     })
-    async signupUser(
-        @Body() req: SignupUserRequestDto,
-    ): Promise<UserResultDto> {
+    async signupUser(@Body() req: SignupUserRequestDto): Promise<UserResultDto> {
         if (req.email && !req.password) {
             throw new BadRequestException('Password is requred');
         }
-        try {
-            const user = await this.userService.signup({ ...req, roles: [] });
-            return this.mapUserToDto(user);
-        } catch (error) {
-            throw new InternalServerErrorException(error.message);
-        }
+        const user = await this.userService.signup({ ...req, roles: [] });
+        await this.userService.createEmailToken(user.email);
+        await this.userService.sendEmailVerification(user.email);
+        return this.mapUserToDto(user);
     }
 
     @Patch('/:id')
@@ -108,20 +86,22 @@ export class UserController {
     @ApiBadRequestResponse({
         description: 'Culd not update user data',
     })
-    async patchUser(
-        @Param('id') id: number,
-        @Body() req: UpdateUserRequestDto,
-    ): Promise<UserResultDto> {
-        const user = await this.userService.findById(id);
-        if (!user) {
-            throw new BadRequestException('Culd not find user by id' + id);
-        }
-        try {
-            const updatedUser = await this.userService.update(id, req);
-            return this.mapUserToDto(updatedUser);
-        } catch (error) {
-            throw new InternalServerErrorException(error.message);
-        }
+    async patchUser(@Param('id') id: number, @Body() req: UpdateUserRequestDto): Promise<UserResultDto> {
+        const updatedUser = await this.userService.update(id, req);
+        return this.mapUserToDto(updatedUser);
+    }
+
+    @Get('email/verify/:token')
+    public async verifyEmail(@Param('token') token: string): Promise<{ valid: boolean }> {
+        const isEmailVerified = await this.userService.verifyEmail(token);
+        return { valid: isEmailVerified };
+    }
+
+    @Get('email/resend-verification/:email')
+    public async sendEmailVerification(@Param('email') email: string): Promise<{ success: boolean }> {
+        await this.userService.createEmailToken(email);
+        const isEmailSent = await this.userService.sendEmailVerification(email);
+        return { success: isEmailSent };
     }
 
     private mapUserToDto(user: User): UserResultDto {

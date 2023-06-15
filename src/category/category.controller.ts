@@ -4,8 +4,6 @@ import {
     UseGuards,
     Param,
     Body,
-    BadRequestException,
-    InternalServerErrorException,
     Post,
     Query,
 } from '@nestjs/common';
@@ -52,24 +50,11 @@ export class CategoryController {
         @Param('parentId') parentId: number,
         @Query('depth') depth?: number,
     ): Promise<GetCategoriesResponseDTO> {
-        try {
-            const parent = this.categoryService.fetchOne(parentId);
-        } catch (e) {
-            throw new BadRequestException(
-                'Thre is no parent category with id ' + parentId,
-            );
-        }
-        try {
-            const categories = await this.categoryService.fetchTree(
-                parentId,
-                depth,
-            );
-            return categories;
-        } catch (e) {
-            throw new InternalServerErrorException(
-                'Could not get categories by the request',
-            );
-        }
+        const categories = await this.categoryService.fetchTree(
+            parentId,
+            depth,
+        );
+        return categories;
     }
 
     @Post('/:parentId')
@@ -82,20 +67,7 @@ export class CategoryController {
         @Param('parentId') parentId: number,
         @Body() req: SaveCategoriesRequestDTO,
     ): Promise<{}> {
-        try {
-            const parent = this.categoryService.fetchOne(parentId);
-        } catch (e) {
-            throw new BadRequestException(
-                'There is no parent category with id ' + parentId,
-            );
-        }
-        try {
-            await this.categoryService.save(parentId, req.categories);
-        } catch (e) {
-            throw new InternalServerErrorException(
-                'Could not save categories by the request',
-            );
-        }
+        await this.categoryService.save(parentId, req.categories);
         return {};
     }
 }

@@ -1,15 +1,6 @@
-import {
-    Entity,
-    Column,
-    PrimaryGeneratedColumn,
-    BeforeInsert,
-    CreateDateColumn,
-    BaseEntity,
-    OneToMany,
-    BeforeUpdate,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, BeforeInsert, CreateDateColumn, BaseEntity, OneToMany, BeforeUpdate } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { UserRoleEnum } from '../../user/types';
+import { UserRoleEnum } from '../../../user/types';
 import { AuthSession } from './authSession.entity';
 
 @Entity('users')
@@ -35,6 +26,9 @@ export class User extends BaseEntity {
     @CreateDateColumn({ type: 'datetime' })
     banned: Date;
 
+    @Column({ type: 'boolean' })
+    validEmail: boolean;
+
     @OneToMany(() => AuthSession, (session) => session.user)
     sessions: AuthSession[];
 
@@ -42,10 +36,8 @@ export class User extends BaseEntity {
     @BeforeUpdate()
     async setPassword(password: string) {
         const value = password || this.password;
-        console.log(value);
         if (value) {
             const salt = await bcrypt.genSalt();
-            console.log(salt);
             this.password = await bcrypt.hash(value, salt);
         }
     }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TSessionUser } from 'src/auth/token/authToken.service';
-import { ProductRequest } from 'src/db/entities';
+import { TSessionUser } from '../auth/token/authToken.service';
+import { ProductRequest } from '../common/db/entities';
 import { Repository } from 'typeorm';
 
 @Injectable()

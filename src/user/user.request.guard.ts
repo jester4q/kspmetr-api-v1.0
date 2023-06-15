@@ -1,26 +1,19 @@
-import limitConfig from '../config/limits.config';
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import {
-    BadRequestException,
-    ForbiddenException,
-} from '@nestjs/common/exceptions';
+import { ForbiddenException } from '@nestjs/common/exceptions';
 import { Reflector } from '@nestjs/core';
 import { TSessionUser } from 'src/auth/token/authToken.service';
-import { User } from 'src/db/entities';
-import { LogService } from 'src/log/log.service';
+import { User } from '../common/db/entities';
+import { TrackingService } from '../tracking/tracking.service';
 import { UserService } from 'src/user/user.service';
-import limitsConfig from '../config/limits.config';
+
+import limitsConfig from '../common/config/limits.config';
 
 const POST_PRODUCT_QUERY = 'POST /api/products/detailed';
 const GET_PRODUCT_DETAILS_QUERY = 'GET /api/product-details';
 
 @Injectable()
 export class UserRequestGuard implements CanActivate {
-    constructor(
-        private reflector: Reflector,
-        private logService: LogService,
-        private userService: UserService,
-    ) {}
+    constructor(private reflector: Reflector, private logService: TrackingService, private userService: UserService) {}
 
     async canActivate(context: ExecutionContext): Promise<boolean> {
         const request = context.switchToHttp().getRequest();
@@ -57,11 +50,7 @@ export class UserRequestGuard implements CanActivate {
         if (user.banned && user.banned.getTime() >= new Date().getTime()) {
             throw new ForbiddenException('Too Many requests');
         }
-        let count = await this.logService.countRequestForMinute(
-            user.id,
-            query,
-            10,
-        );
+        let count = await this.logService.countRequestForMinute(user.id, query, 10);
         if (count > 200) {
             await this.userService.ban(user.id, 10);
             throw new ForbiddenException('Too Many requests');
@@ -76,11 +65,7 @@ export class UserRequestGuard implements CanActivate {
 
     private async checkGetProductDetails(user: User) {
         const query = GET_PRODUCT_DETAILS_QUERY;
-        let count = await this.logService.countRequestForMinute(
-            user.id,
-            query,
-            1,
-        );
+        let count = await this.logService.countRequestForMinute(user.id, query, 1);
         /*
         if (count > 10) {
             throw new ForbiddenException('Too Many requests for last minute');
@@ -91,13 +76,10 @@ export class UserRequestGuard implements CanActivate {
         }
         */
         const limits = limitsConfig();
-        console.log(limits, limits.requestsPerDay);
         if (limits.requestsPerDay >= 0) {
             count = await this.logService.countRequestForDay(user.id, query, 1);
             if (count > limits.requestsPerDay) {
-                throw new ForbiddenException(
-                    'Too Many requests for last 24 hours',
-                );
+                throw new ForbiddenException('Too Many requests for last 24 hours');
             }
         }
     }

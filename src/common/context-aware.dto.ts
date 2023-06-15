@@ -1,6 +1,6 @@
 import { Allow } from 'class-validator';
 
-export class ContextAwareDto {
+export class ApiContextAwareDto {
     @Allow()
     context?: {
         id?: number;

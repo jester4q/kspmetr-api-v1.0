@@ -1,16 +1,19 @@
 import * as bcrypt from 'bcrypt';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserService } from 'src/user/user.service';
 import { AuthTokensService } from './token/authToken.service';
-import { AuthSession } from '../db/entities';
+import { AuthSession } from '../common/db/entities';
+
+import { ApiError, NotFoundApiError } from 'src/common/error';
 
 @Injectable()
 export class AuthService {
     constructor(
         @InjectRepository(AuthSession)
         private sessionRepository: Repository<AuthSession>,
+
         private userService: UserService,
         private tokenService: AuthTokensService,
     ) {}
@@ -24,23 +27,22 @@ export class AuthService {
     }
 
     async loginByEmail(email: string, password: string): Promise<string> {
-        // Check if user exists
         const user = await this.userService.findByEmail(email);
+
         if (!user) {
-            throw new BadRequestException('User does not exist');
+            throw new ApiError('The email address or password is incorrect');
         }
         if (!(await bcrypt.compare(password, user.password))) {
-            throw new BadRequestException('Password is incorrect');
+            throw new ApiError('The email address or password is incorrect');
         }
         const token = await this.tokenService.sign(user);
         return token;
     }
 
     async loginByFingerprint(fingerprint: string): Promise<string> {
-        // Check if user exists
         const user = await this.userService.findByFingerprint(fingerprint);
         if (!user) {
-            throw new BadRequestException('User does not exist');
+            throw new NotFoundApiError('The fingerprint is incorrect');
         }
         const token = await this.tokenService.sign(user);
         return token;
