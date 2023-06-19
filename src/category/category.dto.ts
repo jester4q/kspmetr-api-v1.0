@@ -1,5 +1,6 @@
 import { ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, IsString, IsUrl } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsArray, IsNotEmpty, IsOptional, IsString, IsUrl } from 'class-validator';
 
 export class CategoryDTO {
     @ApiProperty({
@@ -48,7 +49,14 @@ export class SaveCategoriesRequestDTO {
         type: 'array',
         items: { $ref: getSchemaPath(SaveCategoriesRequestDTOItem) },
     })
-    @IsNotEmpty()
+    @IsOptional()
     @IsArray()
     categories: SaveCategoriesRequestDTOItem[];
+    @ApiProperty({
+        description: 'Set category empty',
+        type: 'boolean',
+    })
+    @IsNotEmpty()
+    @Transform(({ value }) => value == '1' || value == 'true' || value === true)
+    empty: boolean;
 }

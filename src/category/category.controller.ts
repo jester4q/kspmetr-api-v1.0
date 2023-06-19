@@ -1,27 +1,7 @@
-import {
-    Controller,
-    Get,
-    UseGuards,
-    Param,
-    Body,
-    Post,
-    Query,
-} from '@nestjs/common';
-import {
-    ApiBadRequestResponse,
-    ApiBearerAuth,
-    ApiBody,
-    ApiCreatedResponse,
-    ApiProperty,
-    ApiQuery,
-    ApiSecurity,
-    ApiTags,
-} from '@nestjs/swagger';
+import { Controller, Get, UseGuards, Param, Body, Post, Query } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiProperty, ApiQuery, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { AuthTokenGuard } from 'src/auth/token/authToken.guard';
-import {
-    GetCategoriesResponseDTO,
-    SaveCategoriesRequestDTO,
-} from './category.dto';
+import { GetCategoriesResponseDTO, SaveCategoriesRequestDTO } from './category.dto';
 import { CategoryService } from './category.service';
 import { HasRoles } from 'src/user/roles/roles.decorator';
 import { UserRoleEnum } from 'src/user/types';
@@ -46,14 +26,8 @@ export class CategoryController {
         type: GetCategoriesResponseDTO,
     })
     @ApiBadRequestResponse({ description: 'Product is not found by request' })
-    async list(
-        @Param('parentId') parentId: number,
-        @Query('depth') depth?: number,
-    ): Promise<GetCategoriesResponseDTO> {
-        const categories = await this.categoryService.fetchTree(
-            parentId,
-            depth,
-        );
+    async list(@Param('parentId') parentId: number, @Query('depth') depth?: number): Promise<GetCategoriesResponseDTO> {
+        const categories = await this.categoryService.fetchTree(parentId, depth);
         return categories;
     }
 
@@ -62,12 +36,8 @@ export class CategoryController {
     @ApiBearerAuth()
     @ApiProperty({ name: 'parentId', required: true })
     @ApiBody({ required: true })
-    async save(
-        @SessionUser() user: TSessionUser,
-        @Param('parentId') parentId: number,
-        @Body() req: SaveCategoriesRequestDTO,
-    ): Promise<{}> {
-        await this.categoryService.save(parentId, req.categories);
+    async save(@SessionUser() user: TSessionUser, @Param('parentId') parentId: number, @Body() req: SaveCategoriesRequestDTO): Promise<{}> {
+        await this.categoryService.save(parentId, req.empty ? [] : req.categories);
         return {};
     }
 }

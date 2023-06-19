@@ -119,3 +119,14 @@ INSERT INTO `categories` (`id`, `level`, `parentCategoryId`, `name`, `url`) VALU
 (NULL, '2', '399', 'Мелкоофисные принадлежности', 'https://kaspi.kz/shop/nur-sultan/c/small%20office%20supplies/?q='),
 (NULL, '2', '399', 'Постпечатное оборудование', 'https://kaspi.kz/shop/nur-sultan/c/post-press%20tools/?q='),
 (NULL, '2', '399', 'Штемпельные принадлежности', 'https://kaspi.kz/shop/nur-sultan/c/stamp%20accessories/?q=');
+
+INSERT INTO `categories` (`id`, `level`, `parentCategoryId`, `name`, `url`) VALUES 
+(NULL, '1', '0', 'Товары для дома и дачи', 'https://kaspi.kz/shop/nur-sultan/c/home/?q=');
+INSERT INTO `categories` (`id`, `level`, `parentCategoryId`, `name`, `url`) VALUES 
+(NULL, '2', '85', 'Хозяйственные товары', 'https://kaspi.kz/shop/nur-sultan/c/household%20goods/?q='), 
+(NULL, '2', '85', 'Посуда и принадлежности', 'https://kaspi.kz/shop/nur-sultan/c/kitchenware/?q='),
+(NULL, '2', '85', 'Домашний текстиль', 'https://kaspi.kz/shop/nur-sultan/c/home%20textiles/?q='),
+(NULL, '2', '85', 'Дача, сад и огород', 'https://kaspi.kz/shop/nur-sultan/c/vegetable%20garden%20goods/?q='),
+(NULL, '2', '85', 'Освещение', 'https://kaspi.kz/shop/nur-sultan/c/lighting/?q='),
+(NULL, '2', '85', 'Интерьер', 'https://kaspi.kz/shop/nur-sultan/c/home%20interior/?q='),
+(NULL, '2', '85', 'Умный дом', 'https://kaspi.kz/shop/nur-sultan/c/smart%20house/?q=');
