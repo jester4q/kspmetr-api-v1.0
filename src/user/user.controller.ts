@@ -69,8 +69,10 @@ export class UserController {
             throw new BadRequestException('Password is requred');
         }
         const user = await this.userService.signup({ ...req, roles: [] });
-        await this.userService.createEmailToken(user.email);
-        await this.userService.sendEmailVerification(user.email);
+        if (req.email) {
+            await this.userService.createEmailToken(user.email);
+            await this.userService.sendEmailVerification(user.email);
+        }
         return this.mapUserToDto(user);
     }
 

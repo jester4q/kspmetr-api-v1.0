@@ -5,9 +5,9 @@ import { TCategoryProduct, TProduct } from './product.types';
 import { Logger } from '../common/log/logger';
 import { IAddDetailedProductModel, IAddProductModel, IProductModel } from './product.model';
 import { Product, ProductHistory, ProductReview, ProductToSeller, Seller } from '../common/db/entities';
-import { TSessionUser } from 'src/auth/token/authToken.service';
-import { CategoryService } from 'src/category/category.service';
-import { ApiError } from 'src/common/error';
+import { TSessionUser } from '../auth/token/authToken.service';
+import { CategoryService } from '../category/category.service';
+import { ApiError } from '../common/error';
 
 export enum DataTypesEnum {
     prices = 'prices',
@@ -45,11 +45,11 @@ export class ProductService {
         private categoryService: CategoryService,
     ) {}
 
-    public async fetchOne(id: number): Promise<TProduct> {
+    public async fetchOne(id: number): Promise<TProduct | null> {
         const product = await this.productRepository.findOneBy({
             id: id,
         });
-        return this.toProduct(product);
+        return product && this.toProduct(product) || null;
     }
 
     public async fetchAllInCategory(categoryIds: number[], depth: number = 0, reverse: boolean = false): Promise<TCategoryProduct[]> {
@@ -112,7 +112,7 @@ export class ProductService {
 
             product.categories = source.cartegoryPath || product.categories;
             product.categoryId = source.categoryId || product.categoryId;
-            product.position = source.position;
+            product.position = source.position || product.position || 0;
         } else {
             product = this.productRepository.create({
                 code: source.code,
@@ -136,9 +136,13 @@ export class ProductService {
             id: productId,
         });
 
+        if (!product) {
+            throw new ApiError('Culd not find product by id');
+        }
+
         if (source.isNotFound) {
-            await this.markProductAsFail(product, source.getErrorMessage);
-            return;
+            await this.markProductAsFail(product, source.getErrorMessage || '');
+            return this.toProduct(product);
         }
 
         product.lastCheckedAt = new Date();
@@ -166,15 +170,15 @@ export class ProductService {
             let sellers = await this.saveSeller(session, source, productId);
             history.productSellers = sellers;
         }
-        if (product.unitPrice !== undefined) {
+        if (source.unitPrice !== undefined) {
             product.unitPrice = source.unitPrice;
             history.unitPrice = source.unitPrice;
         }
-        if (product.creditMonthlyPrice !== undefined) {
+        if (source.creditMonthlyPrice !== undefined) {
             product.creditMonthlyPrice = source.creditMonthlyPrice;
             history.creditMonthlyPrice = source.creditMonthlyPrice;
         }
-        if (product.offersQuantity !== undefined) {
+        if (source.offersQuantity !== undefined) {
             product.offersQuantity = source.offersQuantity;
             history.offersQuantity = source.offersQuantity;
         }
@@ -202,14 +206,14 @@ export class ProductService {
 
     private async saveSeller(session: TSessionUser, product: IProductModel, productId: number): Promise<{ sellerId: number; price: number }[]> {
         const sellers = product.sellers;
-        if (!sellers.length) {
+        if (!sellers || !sellers.length) {
             return [];
         }
         const result: { sellerId: number; price: number }[] = [];
         const toInsert: {
             [key: string]: { code: string; name: string; url: string };
         } = {};
-        const toSelect = [];
+        const toSelect: string[] = [];
         const codeAndPrice = {};
         sellers.forEach((item) => {
             toInsert[item.id] = {
@@ -255,9 +259,9 @@ export class ProductService {
             productId: productId,
         });
 
-        const forDelete = [];
-        const forAdd = [];
-        const hasIds = [];
+        const forDelete: number[] = [];
+        const forAdd: number[] = [];
+        const hasIds: number[] = [];
         productToSellers.forEach((item) => {
             hasIds.push(item.sellerId);
             if (sellersId.indexOf(item.sellerId) === -1) {
@@ -292,7 +296,7 @@ export class ProductService {
     }
 
     private async saveReviews(session: TSessionUser, product: IProductModel, productId: number): Promise<{ rating: number; quantity: number }> {
-        if (product.reviews.length) {
+        if (product.reviews?.length) {
             const productCode = product.code;
             const reviews = product.reviews.map((review) => ({
                 productId: productId,

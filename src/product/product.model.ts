@@ -1,13 +1,6 @@
 import { AddDetailedProductRequestDTO } from './add.detailed.product.dto';
 import { AddProductRequestDTO } from './add.product.dto';
-import {
-    TCategoryName,
-    TCategoryPath,
-    TProductImage,
-    TProductReview,
-    TProductSeller,
-    TProductSpecification,
-} from './product.types';
+import { TCategoryName, TCategoryPath, TProductImage, TProductReview, TProductSeller, TProductSpecification } from './product.types';
 import { SaveProductRequestDTO } from './save.product.dto';
 import { ProductCategoryPathDto } from './product.dto';
 import { isNumber, isArray, isString, strToDate } from '../utils';
@@ -78,9 +71,7 @@ export interface IProductModel {
     isValid(): boolean;
 }
 
-export interface IAddDetailedProductModel
-    extends IAddProductModel,
-        IProductModel {
+export interface IAddDetailedProductModel extends IAddProductModel, IProductModel {
     setId(id: number): void;
 
     setCategories(path: TCategoryPath): void;
@@ -147,9 +138,7 @@ export class ProductModel implements IProductModel {
             return undefined;
         }
         if (typeof this.data.creditMonthlyPrice === 'string') {
-            this.data.creditMonthlyPrice = parseFloat(
-                this.data.creditMonthlyPrice,
-            );
+            this.data.creditMonthlyPrice = parseFloat(this.data.creditMonthlyPrice);
         }
         return this.data.creditMonthlyPrice;
     }
@@ -312,12 +301,8 @@ export class AddProductModel implements IAddProductModel {
     }
 }
 
-export class AddDetailedProductModel
-    extends ProductModel
-    implements IAddDetailedProductModel
-{
-    protected data: AddDetailedProductRequestDTO &
-        SaveProductRequestDTO & { categories: ProductCategoryPathDto };
+export class AddDetailedProductModel extends ProductModel implements IAddDetailedProductModel {
+    protected data: AddDetailedProductRequestDTO & SaveProductRequestDTO & { categories: ProductCategoryPathDto };
 
     constructor(data: AddDetailedProductRequestDTO) {
         super({
@@ -363,6 +348,6 @@ export class AddDetailedProductModel
     }
 
     public get position(): number {
-        return undefined;
+        return 0;
     }
 }

@@ -123,10 +123,36 @@ INSERT INTO `categories` (`id`, `level`, `parentCategoryId`, `name`, `url`) VALU
 INSERT INTO `categories` (`id`, `level`, `parentCategoryId`, `name`, `url`) VALUES 
 (NULL, '1', '0', 'Товары для дома и дачи', 'https://kaspi.kz/shop/nur-sultan/c/home/?q=');
 INSERT INTO `categories` (`id`, `level`, `parentCategoryId`, `name`, `url`) VALUES 
-(NULL, '2', '85', 'Хозяйственные товары', 'https://kaspi.kz/shop/nur-sultan/c/household%20goods/?q='), 
-(NULL, '2', '85', 'Посуда и принадлежности', 'https://kaspi.kz/shop/nur-sultan/c/kitchenware/?q='),
-(NULL, '2', '85', 'Домашний текстиль', 'https://kaspi.kz/shop/nur-sultan/c/home%20textiles/?q='),
-(NULL, '2', '85', 'Дача, сад и огород', 'https://kaspi.kz/shop/nur-sultan/c/vegetable%20garden%20goods/?q='),
-(NULL, '2', '85', 'Освещение', 'https://kaspi.kz/shop/nur-sultan/c/lighting/?q='),
-(NULL, '2', '85', 'Интерьер', 'https://kaspi.kz/shop/nur-sultan/c/home%20interior/?q='),
-(NULL, '2', '85', 'Умный дом', 'https://kaspi.kz/shop/nur-sultan/c/smart%20house/?q=');
+(NULL, '2', '1391', 'Хозяйственные товары', 'https://kaspi.kz/shop/nur-sultan/c/household%20goods/?q='), 
+(NULL, '2', '1391', 'Посуда и принадлежности', 'https://kaspi.kz/shop/nur-sultan/c/kitchenware/?q='),
+(NULL, '2', '1391', 'Домашний текстиль', 'https://kaspi.kz/shop/nur-sultan/c/home%20textiles/?q='),
+(NULL, '2', '1391', 'Дача, сад и огород', 'https://kaspi.kz/shop/nur-sultan/c/vegetable%20garden%20goods/?q='),
+(NULL, '2', '1391', 'Освещение', 'https://kaspi.kz/shop/nur-sultan/c/lighting/?q='),
+(NULL, '2', '1391', 'Интерьер', 'https://kaspi.kz/shop/nur-sultan/c/home%20interior/?q='),
+(NULL, '2', '1391', 'Умный дом', 'https://kaspi.kz/shop/nur-sultan/c/smart%20house/?q=');
+
+INSERT INTO `categories` (`id`, `level`, `parentCategoryId`, `name`, `url`) VALUES 
+(NULL, '1', '0', 'Спорт, туризм', 'https://kaspi.kz/shop/nur-sultan/c/sports%20and%20outdoors/');
+INSERT INTO `categories` (`id`, `level`, `parentCategoryId`, `name`, `url`) VALUES 
+(NULL, '2', '1399', 'Туризм и отдых на природе', 'https://kaspi.kz/shop/nur-sultan/c/camping%20and%20hiking/?q='), 
+(NULL, '2', '1399', 'Товары для фитнеса', 'https://kaspi.kz/shop/nur-sultan/c/fitness/?q='),
+(NULL, '2', '1399', 'Велоспорт', 'https://kaspi.kz/shop/nur-sultan/c/cycling/?q='),
+(NULL, '2', '1399', 'Товары для рыбалки', 'https://kaspi.kz/shop/nur-sultan/c/fishing%20equipment/?q='),
+(NULL, '2', '1399', 'Спортивное питание', 'https://kaspi.kz/shop/nur-sultan/c/sports%20nutrition/?q='),
+(NULL, '2', '1399', 'Самокаты, гироскутеры, моноколеса', 'https://kaspi.kz/shop/nur-sultan/c/outdoor/?q='),
+(NULL, '2', '1399', 'Спортивная защита и экипировка', 'https://kaspi.kz/shop/nur-sultan/c/sports%20protection/?q='),
+(NULL, '2', '1399', 'Спортивные игры', 'https://kaspi.kz/shop/nur-sultan/c/leisure%20sports/?q='),
+(NULL, '2', '1399', 'Водный спорт', 'https://kaspi.kz/shop/nur-sultan/c/water%20sports/?q='),
+(NULL, '2', '1399', 'Тренажеры', 'https://kaspi.kz/shop/nur-sultan/c/exercise%20and%20fitness/?q='),
+(NULL, '2', '1399', 'Бокс и единоборства', 'https://kaspi.kz/shop/nur-sultan/c/boxing%20and%20martial%20arts/?q='),
+(NULL, '2', '1399', 'Зимний спорт', 'https://kaspi.kz/shop/nur-sultan/c/winter%20sports/?q='),
+(NULL, '2', '1399', 'Товары для охоты и стрельбы', 'https://kaspi.kz/shop/nur-sultan/c/hunting%20equipment/?q='),
+(NULL, '2', '1399', 'Роликовые коньки и лыжероллеры', 'https://kaspi.kz/shop/nur-sultan/c/roller%20skating/?q='),
+(NULL, '2', '1399', 'Спортивная одежда и обувь', 'https://kaspi.kz/shop/nur-sultan/c/sports%20clothing/?q='),
+(NULL, '2', '1399', 'Альпинизм и скалолазание', 'https://kaspi.kz/shop/nur-sultan/c/climbing%20equipment/?q='),
+(NULL, '2', '1399', 'Товары для йоги', 'https://kaspi.kz/shop/nur-sultan/c/yoga%20goods/?q='),
+(NULL, '2', '1399', 'Художественная гимнастика и танцы', 'https://kaspi.kz/shop/nur-sultan/c/rhythmic%20gymnastics%20and%20dance/?q='),
+(NULL, '2', '1399', 'Пауэрлифтинг', 'https://kaspi.kz/shop/nur-sultan/c/powerlifting/?q='),
+(NULL, '2', '1399', 'Конный спорт', 'https://kaspi.kz/shop/nur-sultan/c/equestrian%20equipment/?q=');
+
+

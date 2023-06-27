@@ -53,7 +53,7 @@ export class Product extends BaseEntity {
     failDescription: string;
 
     @Column({ type: 'datetime' })
-    failDate: Date;
+    failDate: Date | null;
 
     @Column()
     attempt: number;
