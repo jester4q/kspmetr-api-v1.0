@@ -49,7 +49,7 @@ export class ProductService {
         const product = await this.productRepository.findOneBy({
             id: id,
         });
-        return product && this.toProduct(product) || null;
+        return (product && this.toProduct(product)) || null;
     }
 
     public async fetchAllInCategory(categoryIds: number[], depth: number = 0, reverse: boolean = false): Promise<TCategoryProduct[]> {
@@ -124,6 +124,7 @@ export class ProductService {
                 position: source.position,
             });
         }
+        product.lastSeeAt = new Date();
         await product.save();
         return this.toProduct(product);
     }
@@ -307,7 +308,7 @@ export class ProductService {
                 externalId: review.externalId,
                 sessionId: session.sessionId,
             }));
-            await this.reviewRepository.createQueryBuilder().insert().into(this.reviewRepository.target).values(reviews).orIgnore().execute();
+            await this.reviewRepository.createQueryBuilder().insert().into(this.reviewRepository.target).values(reviews).orUpdate(['date']).execute();
         }
         const rating = await this.reviewRepository.average('rating', {
             productId: productId,

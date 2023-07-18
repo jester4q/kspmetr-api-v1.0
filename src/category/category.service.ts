@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Logger } from '../common/log/logger';
 import { TCategory } from './category.types';
 import { Category } from '../common/db/entities';
-import { TCategoryPath } from 'src/product/product.types';
+import { TCategoryName, TCategoryPath } from 'src/product/product.types';
 import { ApiError } from '../common/error';
 
 @Injectable()
@@ -103,8 +103,8 @@ export class CategoryService {
         return !failed;
     }
 
-    public async addPath(path: { level1: string; level2: string; level3?: string; level4?: string }): Promise<TCategoryPath> {
-        const way = [path.level1, path.level2, path.level3, path.level4].filter((x) => x && x.length > 0);
+    public async addPath(path: TCategoryName): Promise<TCategoryPath> {
+        const way = [path.level1, path.level2, path.level3, path.level4, path.level5, path.level6].filter((x) => x && x.length > 0);
         const result: TCategoryPath = { level1: 0, level2: 0 };
         const queryRunner = this.dataSource.createQueryRunner();
         try {

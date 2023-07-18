@@ -26,6 +26,8 @@ export type TCategoryPath = {
     level2: number;
     level3?: number;
     level4?: number;
+    level5?: number;
+    level6?: number;
 };
 
 export type TCategoryName = {
@@ -33,6 +35,8 @@ export type TCategoryName = {
     level2: string;
     level3?: string;
     level4?: string;
+    level5?: string;
+    level6?: string;
 };
 
 export type TProductImage = {

@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import {
-    ValidationArguments,
-    ValidatorConstraint,
-    ValidatorConstraintInterface,
-} from 'class-validator';
+import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { ProductImageDto } from './product.dto';
 
 @ValidatorConstraint({ name: 'GalleryImageValidation', async: false })
@@ -39,9 +35,6 @@ function checkUrl(str: any): boolean {
     try {
         const url = new URL(str);
         if (!url.host.indexOf('kaspi.kz')) {
-            return false;
-        }
-        if (url.pathname.indexOf('shop/') === -1) {
             return false;
         }
     } catch (err) {

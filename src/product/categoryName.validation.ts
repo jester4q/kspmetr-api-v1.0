@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import {
-    ValidationArguments,
-    ValidatorConstraint,
-    ValidatorConstraintInterface,
-} from 'class-validator';
+import { ValidationArguments, ValidatorConstraint, ValidatorConstraintInterface } from 'class-validator';
 import { ProductCategoryNameDto } from './product.dto';
 
 @ValidatorConstraint({ name: 'CategoryNameValidation', async: false })
@@ -25,12 +21,15 @@ export class CategoryNameValidation implements ValidatorConstraintInterface {
             return false;
         }
 
-        const path = [
-            value.level1,
-            value.level2,
-            value.level3,
-            value.level4,
-        ].filter((x) => x && x.length);
+        if (value.level5 && !value.level4) {
+            return false;
+        }
+
+        if (value.level6 && !value.level5) {
+            return false;
+        }
+
+        const path = Object.values(value).filter((x) => x && x.length);
         if (path.length < 2) {
             return false;
         }

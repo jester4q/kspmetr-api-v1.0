@@ -157,6 +157,16 @@ export class ProductCategoryPathDto {
         required: false,
     })
     level4?: number;
+    @ApiProperty({
+        description: 'Level 5 category id',
+        required: false,
+    })
+    level5?: number;
+    @ApiProperty({
+        description: 'Level 6 category id',
+        required: false,
+    })
+    level6?: number;
 }
 
 export class ProductCategoryNameDto {
@@ -180,6 +190,16 @@ export class ProductCategoryNameDto {
         required: false,
     })
     level4?: string;
+    @ApiProperty({
+        description: 'Level 5 category name',
+        required: false,
+    })
+    level5?: string;
+    @ApiProperty({
+        description: 'Level 6 category name',
+        required: false,
+    })
+    level6?: string;
 }
 
 export class ProductSellerDTO {

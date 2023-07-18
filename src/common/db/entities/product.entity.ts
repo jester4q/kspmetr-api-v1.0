@@ -1,8 +1,4 @@
-import {
-    TCategoryPath,
-    TProductImage,
-    TProductSpecification,
-} from '../../../product/product.types';
+import { TCategoryPath, TProductImage, TProductSpecification } from '../../../product/product.types';
 import { Entity, Column, PrimaryGeneratedColumn, BaseEntity } from 'typeorm';
 
 @Entity('products')
@@ -42,6 +38,9 @@ export class Product extends BaseEntity {
 
     @Column({ type: 'datetime' })
     lastCheckedAt: Date;
+
+    @Column({ type: 'datetime' })
+    lastSeeAt: Date;
 
     @Column({ type: 'decimal' })
     productRating: number;

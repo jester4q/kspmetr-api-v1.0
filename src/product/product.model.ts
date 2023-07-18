@@ -287,7 +287,7 @@ export class AddProductModel implements IAddProductModel {
 
     public get categoryId(): number {
         const path = this.cartegoryPath;
-        return (path && (path.level4 || path.level3 || path.level2)) || 0;
+        return (path && (path.level6 || path.level5 || path.level4 || path.level3 || path.level2)) || 0;
     }
 
     public get position(): number {
@@ -340,7 +340,7 @@ export class AddDetailedProductModel extends ProductModel implements IAddDetaile
 
     public get categoryId(): number {
         const path = this.cartegoryPath;
-        return (path && (path.level4 || path.level3 || path.level2)) || 0;
+        return (path && (path.level6 || path.level5 || path.level4 || path.level3 || path.level2)) || 0;
     }
 
     public get categoryName(): TCategoryName {
