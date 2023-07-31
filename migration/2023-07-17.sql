@@ -1,0 +1,1 @@
+ALTER TABLE `products` ADD `lastSeeAt` DATE NULL DEFAULT NULL AFTER `lastCheckedAt`;

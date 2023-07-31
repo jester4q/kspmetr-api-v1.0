@@ -7,6 +7,12 @@ import { Category } from '../common/db/entities';
 import { TCategoryName, TCategoryPath } from 'src/product/product.types';
 import { ApiError } from '../common/error';
 
+function isSameUrl(a: string, b: string) {
+    const url1 = a.split('?')[0];
+    const url2 = b.split('?')[0];
+
+    return url1 == url2;
+}
 @Injectable()
 export class CategoryService {
     private logger = new Logger('category');
@@ -58,7 +64,7 @@ export class CategoryService {
 
         for (let i = 0; i < categories.length; i++) {
             const newItem = categories[i];
-            const hasItem = old.find((oldItem) => newItem.url == oldItem.url);
+            const hasItem = old.find((oldItem) => isSameUrl(newItem.url, oldItem.url));
             if (hasItem && hasItem.name != newItem.name) {
                 hasItem.name = newItem.name;
                 hasItem.status = 1;
@@ -78,7 +84,7 @@ export class CategoryService {
 
         for (let i = 0; i < old.length; i++) {
             const oldItem = old[i];
-            const hasItem = categories.find((newItem) => newItem.url == oldItem.url);
+            const hasItem = categories.find((newItem) => isSameUrl(newItem.url, oldItem.url));
             if (!hasItem) {
                 await this.setStatusToTree(oldItem, false);
             }
