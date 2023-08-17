@@ -7,6 +7,7 @@ export type TProduct = {
     creditMonthlyPrice: number;
     offersQuantity: number;
     reviewsQuantity: number;
+    ratingQuantity: number;
     description: string;
     specification: TProductSpecification[];
     galleryImages: TProductImage[];
@@ -57,9 +58,11 @@ export type TProductSeller = {
     url: string;
 };
 
+/*
 export type TProductReview = {
     author: string;
     date: Date | null;
     rating: number;
     externalId: string;
 };
+*/

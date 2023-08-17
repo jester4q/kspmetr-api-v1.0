@@ -37,6 +37,11 @@ export class ProductDetailsDto {
     reviewsQuantity: number;
 
     @ApiProperty({
+        description: 'Product ratings quantity',
+    })
+    ratingQuantity: number;
+
+    @ApiProperty({
         description: 'History period in days',
     })
     period: number;

@@ -42,6 +42,11 @@ export class ProductDto {
     reviewsQuantity: number;
 
     @ApiProperty({
+        description: 'Amount of ratings',
+    })
+    ratingQuantity: number;
+
+    @ApiProperty({
         description: 'Product description',
     })
     description: string;
@@ -115,25 +120,6 @@ export class ProductImageDto {
         description: 'Small image url',
     })
     small: string;
-}
-
-export class ProductReviewDto {
-    @ApiProperty({
-        description: 'Reviw author name',
-    })
-    author: string;
-    @ApiProperty({
-        description: 'Review date',
-    })
-    date: string;
-    @ApiProperty({
-        description: 'Product rating',
-    })
-    rating: number;
-    @ApiProperty({
-        description: 'External review id',
-    })
-    id: string;
 }
 
 export class ProductCategoryPathDto {

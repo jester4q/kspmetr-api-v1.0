@@ -1,18 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-    ProductImageDto,
-    ProductReviewDto,
-    ProductSellerDTO,
-    ProductSpecificationDto,
-} from './product.dto';
-import {
-    IsArray,
-    IsNotEmpty,
-    IsObject,
-    IsOptional,
-    IsString,
-    Validate,
-} from 'class-validator';
+import { ProductImageDto, ProductSellerDTO, ProductSpecificationDto } from './product.dto';
+import { IsArray, IsNotEmpty, IsObject, IsOptional, IsString, Validate } from 'class-validator';
 import { IsNumberOrString } from './numberOrString.validator';
 import { Transform } from 'class-transformer';
 
@@ -88,6 +76,13 @@ export class SaveProductRequestDTO {
     reviewsQuantity: number;
 
     @ApiProperty({
+        description: 'Amount product reviews',
+    })
+    @IsOptional()
+    @Validate(IsNumberOrString)
+    ratingQuantity: number;
+
+    @ApiProperty({
         description: 'Amount product offers',
     })
     @IsOptional()
@@ -114,13 +109,6 @@ export class SaveProductRequestDTO {
     @IsOptional()
     @IsArray()
     sellers: ProductSellerDTO[];
-
-    @ApiProperty({
-        description: 'Product reviews',
-    })
-    @IsOptional()
-    @IsArray()
-    reviews: ProductReviewDto[];
 
     @ApiProperty({
         description: 'Errors of get product info',

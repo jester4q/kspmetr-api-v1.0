@@ -19,10 +19,7 @@ export class AuthService {
     ) {}
 
     async logout(userId: number): Promise<any> {
-        await this.sessionRepository.update(
-            { userId: userId, active: true },
-            { active: false },
-        );
+        await this.sessionRepository.update({ userId: userId, active: true }, { active: false });
         return {};
     }
 

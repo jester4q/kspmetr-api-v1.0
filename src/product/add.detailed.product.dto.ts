@@ -1,38 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-    ProductCategoryNameDto,
-    ProductImageDto,
-    ProductReviewDto,
-    ProductSellerDTO,
-    ProductSpecificationDto,
-} from './product.dto';
-import {
-    IsNotEmpty,
-    IsNumber,
-    IsOptional,
-    IsString,
-    IsUrl,
-    Matches,
-    Validate,
-} from 'class-validator';
-import {
-    GalleryImageValidation,
-    isValidProductImageDto,
-} from './galleryImages.validation';
+import { ProductCategoryNameDto, ProductImageDto, ProductSellerDTO, ProductSpecificationDto } from './product.dto';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Matches, Validate } from 'class-validator';
+import { GalleryImageValidation, isValidProductImageDto } from './galleryImages.validation';
 import { ProductUrlValidation } from './url.validation';
-import {
-    ProductSpecificationValidation,
-    isValidProductSpecificationDto,
-} from './specification.validation';
+import { ProductSpecificationValidation, isValidProductSpecificationDto } from './specification.validation';
 import { CategoryNameValidation } from './categoryname.validation';
-import {
-    SellersValidation,
-    isValidProductSellerDto,
-} from './sellers.validation';
-import {
-    ReviewsValidation,
-    isValidProductReviewDto,
-} from './reviews.validation';
+import { SellersValidation, isValidProductSellerDto } from './sellers.validation';
 import { Transform } from 'class-transformer';
 import { isNumber, isString } from 'src/utils';
 import { IsNumberOrString } from './numberOrString.validator';
@@ -98,6 +71,16 @@ export class AddDetailedProductRequestDTO {
     reviewsQuantity: number | undefined;
 
     @ApiProperty({
+        description: 'Amount of ratings',
+        required: false,
+        type: Number,
+    })
+    @IsOptional()
+    @IsNumber()
+    @Transform(({ value }) => validOrUndefined(isNumber(value), value))
+    ratingQuantity: number | undefined;
+
+    @ApiProperty({
         description: 'Product specification',
         required: false,
         isArray: true,
@@ -105,9 +88,7 @@ export class AddDetailedProductRequestDTO {
     })
     @IsOptional()
     @Validate(ProductSpecificationValidation)
-    @Transform(({ value }) =>
-        validOrUndefined(isValidProductSpecificationDto(value), value),
-    )
+    @Transform(({ value }) => validOrUndefined(isValidProductSpecificationDto(value), value))
     specification: ProductSpecificationDto[] | undefined;
 
     @ApiProperty({
@@ -118,9 +99,7 @@ export class AddDetailedProductRequestDTO {
     })
     @IsOptional()
     @Validate(GalleryImageValidation)
-    @Transform(({ value }) =>
-        validOrUndefined(isValidProductImageDto(value), value),
-    )
+    @Transform(({ value }) => validOrUndefined(isValidProductImageDto(value), value))
     galleryImages: ProductImageDto[] | undefined;
 
     @ApiProperty({
@@ -151,23 +130,8 @@ export class AddDetailedProductRequestDTO {
     })
     @IsOptional()
     @Validate(SellersValidation)
-    @Transform(({ value }) =>
-        validOrUndefined(isValidProductSellerDto(value), value),
-    )
+    @Transform(({ value }) => validOrUndefined(isValidProductSellerDto(value), value))
     sellers: ProductSellerDTO[] | undefined;
-
-    @ApiProperty({
-        description: 'Product reviews',
-        required: false,
-        isArray: true,
-        type: ProductReviewDto,
-    })
-    @IsOptional()
-    @Validate(ReviewsValidation)
-    @Transform(({ value }) =>
-        validOrUndefined(isValidProductReviewDto(value), value),
-    )
-    reviews: ProductReviewDto[] | undefined;
 
     @ApiProperty({
         description: 'Product description',

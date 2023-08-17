@@ -18,3 +18,8 @@ export enum UserRoleEnum {
     chromeExtension = 'chrome_ext',
     siteUser = 'site_user',
 }
+
+export enum VerificationType {
+    signup = 'signup',
+    resetpassword = 'resetpassword',
+}

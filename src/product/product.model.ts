@@ -1,9 +1,9 @@
 import { AddDetailedProductRequestDTO } from './add.detailed.product.dto';
 import { AddProductRequestDTO } from './add.product.dto';
-import { TCategoryName, TCategoryPath, TProductImage, TProductReview, TProductSeller, TProductSpecification } from './product.types';
+import { TCategoryName, TCategoryPath, TProductImage, TProductSeller, TProductSpecification } from './product.types';
 import { SaveProductRequestDTO } from './save.product.dto';
 import { ProductCategoryPathDto } from './product.dto';
-import { isNumber, isArray, isString, strToDate } from '../utils';
+import { isNumber, isArray, isString } from '../utils';
 
 export interface IAddProductModel {
     url: string;
@@ -42,6 +42,8 @@ export interface IProductModel {
 
     reviewsQuantity: number | undefined;
 
+    ratingQuantity: number | undefined;
+
     offersQuantity: number | undefined;
 
     specification: TProductSpecification[] | undefined;
@@ -49,8 +51,6 @@ export interface IProductModel {
     description: string | undefined;
 
     sellers: TProductSeller[] | undefined;
-
-    reviews: TProductReview[] | undefined;
 
     hasDetalsError: boolean;
 
@@ -178,6 +178,16 @@ export class ProductModel implements IProductModel {
         return this.data.reviewsQuantity;
     }
 
+    public get ratingQuantity(): number | undefined {
+        if (!isNumber(this.data.ratingQuantity)) {
+            return undefined;
+        }
+        if (typeof this.data.ratingQuantity === 'string') {
+            this.data.ratingQuantity = parseInt(this.data.ratingQuantity);
+        }
+        return this.data.ratingQuantity;
+    }
+
     public get offersQuantity(): number | undefined {
         if (!isNumber(this.data.offersQuantity)) {
             return undefined;
@@ -209,18 +219,6 @@ export class ProductModel implements IProductModel {
                 price: x.price,
                 id: x.merchantId,
                 url: x.url,
-            }));
-        }
-        return undefined;
-    }
-
-    public get reviews(): TProductReview[] | undefined {
-        if (isArray(this.data.reviews)) {
-            return this.data.reviews.map((x) => ({
-                author: x.author,
-                date: strToDate(x.date),
-                externalId: x.id,
-                rating: x.rating,
             }));
         }
         return undefined;

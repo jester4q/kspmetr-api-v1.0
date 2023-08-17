@@ -10,6 +10,7 @@ export enum DataTypesEnum {
     reviews = 'reviews',
     sellers = 'sellers',
     rating = 'rating',
+    ratingсount = 'ratingсount',
 }
 
 export enum ModeEnum {
@@ -17,7 +18,7 @@ export enum ModeEnum {
     dates = 'dates',
 }
 
-export type TDataType = 'prices' | 'rating' | 'reviews' | 'sellers';
+export type TDataType = 'prices' | 'rating' | 'reviews' | 'sellers' | 'ratingсount';
 
 export type TProductStatItem = { [key: string]: string };
 
@@ -25,6 +26,7 @@ export type TProductStat = {
     prices?: TProductStatItem;
     reviews?: TProductStatItem;
     ratings?: TProductStatItem;
+    ratingсount?: TProductStatItem;
     sellers?: TProductStatItem;
 };
 
@@ -44,11 +46,7 @@ export class ProductDetailsService {
         return product;
     }
 
-    public async fetchStatByDates(
-        productId: number,
-        period: number,
-        types: DataTypesEnum[],
-    ): Promise<TProductStat> {
+    public async fetchStatByDates(productId: number, period: number, types: DataTypesEnum[]): Promise<TProductStat> {
         const date = new Date();
         const from = new Date();
         from.setDate(date.getDate() - period);
@@ -70,9 +68,7 @@ export class ProductDetailsService {
             const currentDate = new Date();
             currentDate.setDate(date.getDate() - i);
             const current = dateToStr(currentDate);
-            const item = history.find(
-                (x) => dateToStr(x.createdAt) === current,
-            );
+            const item = history.find((x) => dateToStr(x.createdAt) === current);
             if (types.includes(DataTypesEnum.prices)) {
                 if (!result.prices) {
                     result.prices = {};
@@ -83,37 +79,32 @@ export class ProductDetailsService {
                 if (!result.ratings) {
                     result.ratings = {};
                 }
-                result.ratings[current] =
-                    '' + ((item && item.productRating) || '');
+                result.ratings[current] = '' + ((item && item.productRating) || '');
             }
             if (types.includes(DataTypesEnum.reviews)) {
                 if (!result.reviews) {
                     result.reviews = {};
                 }
-                result.reviews[current] =
-                    '' + ((item && item.reviewsQuantity) || '');
+                result.reviews[current] = '' + ((item && item.reviewsQuantity) || '');
+            }
+            if (types.includes(DataTypesEnum.ratingсount)) {
+                if (!result.ratingсount) {
+                    result.ratingсount = {};
+                }
+                result.ratingсount[current] = '' + ((item && item.ratingQuantity) || '');
             }
             if (types.includes(DataTypesEnum.sellers)) {
                 if (!result.sellers) {
                     result.sellers = {};
                 }
-                result.sellers[current] =
-                    '' +
-                    ((item &&
-                        item.productSellers &&
-                        item.productSellers.length) ||
-                        '');
+                result.sellers[current] = '' + ((item && item.productSellers && item.productSellers.length) || '');
             }
         }
 
         return result;
     }
 
-    public async fetchStatByValues(
-        productId: number,
-        period: number,
-        types: DataTypesEnum[],
-    ): Promise<TProductStat> {
+    public async fetchStatByValues(productId: number, period: number, types: DataTypesEnum[]): Promise<TProductStat> {
         const history = await this.historyRepository.find({
             where: { productId: productId },
             order: { createdAt: 'DESC' },
@@ -126,27 +117,31 @@ export class ProductDetailsService {
                 if (!result.prices) {
                     result.prices = {};
                 }
-                result.prices[date] = '' + item.unitPrice;
+                result.prices[date] = '' + ((item && item.unitPrice) || '');
             }
             if (types.includes(DataTypesEnum.rating)) {
                 if (!result.ratings) {
                     result.ratings = {};
                 }
-                result.ratings[date] = '' + item.productRating;
+                result.ratings[date] = '' + ((item && item.productRating) || '');
             }
             if (types.includes(DataTypesEnum.reviews)) {
                 if (!result.reviews) {
                     result.reviews = {};
                 }
-                result.reviews[date] = '' + item.reviewsQuantity;
+                result.reviews[date] = '' + ((item && item.reviewsQuantity) || '');
+            }
+            if (types.includes(DataTypesEnum.ratingсount)) {
+                if (!result.ratingсount) {
+                    result.ratingсount = {};
+                }
+                result.ratingсount[date] = '' + ((item && item.ratingQuantity) || '');
             }
             if (types.includes(DataTypesEnum.sellers)) {
                 if (!result.sellers) {
                     result.sellers = {};
                 }
-                result.sellers[date] =
-                    '' +
-                    ((item.productSellers && item.productSellers.length) || 0);
+                result.sellers[date] = '' + ((item.productSellers && item.productSellers.length) || 0);
             }
         });
 

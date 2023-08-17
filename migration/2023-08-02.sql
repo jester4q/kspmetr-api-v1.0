@@ -1,0 +1,1 @@
+ALTER TABLE `emailVerifications` ADD `type` ENUM('signup','resetpassword') NOT NULL DEFAULT 'signup' AFTER `createdAt`;

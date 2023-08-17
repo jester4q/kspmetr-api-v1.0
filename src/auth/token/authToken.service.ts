@@ -53,11 +53,7 @@ export class AuthTokensService {
             where: { id: result.sub, active: true },
         });
 
-        if (
-            session &&
-            session.token == token &&
-            session.expiredAt.getTime() >= new Date().getTime()
-        ) {
+        if (session && session.token == token && session.expiredAt.getTime() >= new Date().getTime()) {
             const user = await this.userRepository.findOneBy({
                 id: session.userId,
             });

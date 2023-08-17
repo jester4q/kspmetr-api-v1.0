@@ -1,16 +1,7 @@
 import { Controller, Get, Query, UseGuards, Request } from '@nestjs/common';
-import {
-    ApiCreatedResponse,
-    ApiQuery,
-    ApiSecurity,
-    ApiTags,
-} from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiQuery, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { AuthTokenGuard } from 'src/auth/token/authToken.guard';
-import {
-    DataTypesEnum,
-    ModeEnum,
-    ProductDetailsService,
-} from './product.details.service';
+import { DataTypesEnum, ModeEnum, ProductDetailsService } from './product.details.service';
 import { ProductUrlPipe } from './productUrl.pipe';
 import { ProductPeriodPipe } from './productPeriod.pipe';
 import { ProductDataTypesPipe } from './productDataTypes.pipe';
@@ -57,12 +48,7 @@ export class ProductDetailsController {
         name: 'data_type',
         description: 'Set of data typees',
         required: true,
-        example: [
-            DataTypesEnum.prices,
-            DataTypesEnum.rating,
-            DataTypesEnum.reviews,
-            DataTypesEnum.sellers,
-        ],
+        example: [DataTypesEnum.prices, DataTypesEnum.rating, DataTypesEnum.reviews, DataTypesEnum.sellers],
     })
     @ApiQuery({
         enum: ModeEnum,
@@ -82,19 +68,14 @@ export class ProductDetailsController {
         mode?: ModeEnum,
     ): Promise<ProductDetailsDto> {
         const product = await this.productService.fetchOne(productCode);
-        if (!product) {
-            throw new NotFoundException(
-                `Product is not found by code ${productCode}`,
-            );
+        if (!product || !product.lastCheckedAt) {
+            throw new NotFoundException(`Product is not found by code ${productCode}`);
         }
-        const stat = await (mode === ModeEnum.values
-            ? this.productService.fetchStatByValues(product.id, period, types)
-            : this.productService.fetchStatByDates(product.id, period, types));
+
+        const stat = await (mode === ModeEnum.values ? this.productService.fetchStatByValues(product.id, period, types) : this.productService.fetchStatByDates(product.id, period, types));
         const result: ProductDetailsDto = {
             code: product.code,
-            dateLastCheck:
-                (product.lastCheckedAt && dateToStr(product.lastCheckedAt)) ||
-                '',
+            dateLastCheck: (product.lastCheckedAt && dateToStr(product.lastCheckedAt)) || '',
             galleryImages:
                 (product.galleryImages &&
                     product.galleryImages.reduce((r: string[], item) => {
@@ -105,6 +86,7 @@ export class ProductDetailsController {
             period: period,
             rating: product.productRating,
             reviewsQuantity: product.reviewsQuantity,
+            ratingQuantity: product.ratingQuantity,
             title: product.title,
             unitPrice: product.unitPrice,
             url: product.url,

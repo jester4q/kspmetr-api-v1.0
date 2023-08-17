@@ -23,6 +23,9 @@ export class ProductHistory extends BaseEntity {
     @Column()
     reviewsQuantity: number;
 
+    @Column({ type: 'int' })
+    ratingQuantity: number;
+
     @Column({ type: 'decimal' })
     productRating: number;
 

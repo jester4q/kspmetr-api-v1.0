@@ -27,6 +27,9 @@ export class Product extends BaseEntity {
     @Column({ type: 'int' })
     reviewsQuantity: number;
 
+    @Column({ type: 'int' })
+    ratingQuantity: number;
+
     @Column()
     description: string;
 

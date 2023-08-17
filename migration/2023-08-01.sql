@@ -1,0 +1,2 @@
+ALTER TABLE `products` ADD `ratingQuantity` INT UNSIGNED NOT NULL DEFAULT '0' AFTER `reviewsQuantity`;
+ALTER TABLE `productsHistory` ADD `ratingQuantity` INT UNSIGNED NOT NULL DEFAULT '0' AFTER `reviewsQuantity`;

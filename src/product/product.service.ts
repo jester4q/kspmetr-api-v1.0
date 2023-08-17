@@ -157,12 +157,20 @@ export class ProductService {
             parsingId: source.parsingId,
             sessionId: session.sessionId,
         };
-        if (source.reviews && !source.hasReviewsError) {
-            const { rating, quantity } = await this.saveReviews(session, source, productId);
-            product.productRating = rating;
-            history.productRating = rating;
-            product.reviewsQuantity = quantity;
-            history.reviewsQuantity = quantity;
+        if (!source.hasReviewsError) {
+            //const { rating, quantity } = await this.saveReviews(session, source, productId);
+            if (source.rating !== undefined) {
+                product.productRating = source.rating;
+                history.productRating = source.rating;
+            }
+            if (source.reviewsQuantity !== undefined) {
+                product.reviewsQuantity = source.reviewsQuantity;
+                history.reviewsQuantity = source.reviewsQuantity;
+            }
+            if (source.ratingQuantity !== undefined) {
+                product.ratingQuantity = source.ratingQuantity;
+                history.ratingQuantity = source.ratingQuantity;
+            }
         }
         if (source.description && !source.hasDescriptionError) {
             product.description = source.description;
@@ -188,12 +196,6 @@ export class ProductService {
             if (source.galleryImages) {
                 product.galleryImages = source.galleryImages;
             }
-            /*
-            if (source.reviewsQuantity !== undefined) {
-                product.reviewsQuantity = source.reviewsQuantity;
-                history.reviewsQuantity = source.reviewsQuantity;
-            }
-            */
         }
         if (source.specification !== undefined && !source.hasSpecificationError) {
             product.specification = source.specification;
@@ -295,7 +297,7 @@ export class ProductService {
 
         return result;
     }
-
+    /*
     private async saveReviews(session: TSessionUser, product: IProductModel, productId: number): Promise<{ rating: number; quantity: number }> {
         if (product.reviews?.length) {
             const productCode = product.code;
@@ -320,6 +322,7 @@ export class ProductService {
         });
         return { rating, quantity };
     }
+    */
 
     private async markProductAsFail(product: Product, reason: string) {
         product.status = 0;
@@ -341,6 +344,7 @@ export class ProductService {
             offersQuantity: product.offersQuantity,
             productRating: product.productRating,
             reviewsQuantity: product.reviewsQuantity,
+            ratingQuantity: product.ratingQuantity,
             specification: product.specification,
             unitPrice: product.unitPrice,
             url: product.url,

@@ -1,3 +1,4 @@
+import { VerificationType } from 'src/user/types';
 import { Entity, Column, BaseEntity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('emailVerifications')
@@ -13,4 +14,7 @@ export class EmailVerification extends BaseEntity {
 
     @Column({ type: 'datetime', default: () => 'NOW()' })
     createdAt: Date;
+
+    @Column('set', { enum: VerificationType })
+    type: VerificationType;
 }

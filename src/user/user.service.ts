@@ -2,11 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EmailVerification, User } from '../common/db/entities';
-import { TUserAdd, TUserUpdate, UserRoleEnum } from './types';
+import { TUserAdd, TUserUpdate, UserRoleEnum, VerificationType } from './types';
 import { Mailer } from '../common/mailer/mailer';
 import { ApiError, DeprecatedRequestsApiError, ManyRequestsApiError, NotFoundApiError } from 'src/common/error';
 import { Template } from 'src/common/template';
 import { JwtService } from '@nestjs/jwt';
+
+import * as bcrypt from 'bcrypt';
 
 import appConfig from '../common/config/app.config';
 
@@ -117,13 +119,10 @@ export class UserService {
         }
     }
 
-    async createEmailToken(email: string): Promise<boolean> {
-        const user = await this.findByEmail(email);
-        if (!user || user.validEmail) {
-            throw new NotFoundApiError('Email address is not registered');
-        }
+    async createEmailToken(user: User, type: VerificationType): Promise<boolean> {
         let verification = await this.emailVerificationRepository.findOneBy({
-            email: email,
+            email: user.email,
+            type: type,
         });
         if (verification && (new Date().getTime() - verification.createdAt.getTime()) / 60000 < 1) {
             throw new ManyRequestsApiError('The email sent recently');
@@ -131,7 +130,8 @@ export class UserService {
 
         if (!verification) {
             verification = this.emailVerificationRepository.create({
-                email: email,
+                email: user.email,
+                type: type,
             });
         }
         //Generate 7 digits number
@@ -153,6 +153,7 @@ export class UserService {
         }
         const verification = await this.emailVerificationRepository.findOneBy({
             token: result.token,
+            type: VerificationType.signup,
         });
         if (!verification || !verification.email || verification.email !== result.sub) {
             throw new NotFoundApiError('The email token is not valid');
@@ -171,9 +172,14 @@ export class UserService {
         return false;
     }
 
-    async sendEmailVerification(email: string): Promise<boolean> {
+    async sendEmailVerification(user: User): Promise<boolean> {
+        if (user.validEmail) {
+            throw new NotFoundApiError('Email address is not registered');
+        }
+        await this.createEmailToken(user, VerificationType.signup);
         const verification = await this.emailVerificationRepository.findOneBy({
-            email: email,
+            email: user.email,
+            type: VerificationType.signup,
         });
 
         if (verification && verification.token) {
@@ -189,8 +195,79 @@ export class UserService {
             const mailer = new Mailer();
             const tmp = new Template('varify.email.template.html', { VERIFYURL: appConf.appHttpUrl + 'auth/email/verify/' + token, URL: appConf.appHttpUrl });
 
-            return mailer.send(appConf.appEmailAddresser, email, 'Подтверждение почты', await tmp.build());
+            return mailer.send(appConf.appEmailAddresser, user.email, 'Подтверждение почты', await tmp.build());
         }
-        throw new ApiError('User is not registered by email: ' + email);
+        throw new ApiError('User is not registered by email: ' + user.email);
+    }
+
+    async sendEmailResetPassword(user: User): Promise<boolean> {
+        await this.createEmailToken(user, VerificationType.resetpassword);
+        const verification = await this.emailVerificationRepository.findOneBy({
+            email: user.email,
+            type: VerificationType.resetpassword,
+        });
+
+        if (verification && verification.token) {
+            const appConf = appConfig();
+            const token = this.jwt.sign(
+                {
+                    sub: verification.email,
+                    token: verification.token,
+                },
+                { secret: appConfig().appSecret },
+            );
+
+            const mailer = new Mailer();
+            const tmp = new Template('reset.email.template.html', { RESETURL: appConf.appHttpUrl + 'auth/reset-password/' + token, URL: appConf.appHttpUrl });
+
+            return mailer.send(appConf.appEmailAddresser, user.email, 'Сброс пароля', await tmp.build());
+        }
+        throw new ApiError('User dont have request to reset password by email: ' + user.email);
+    }
+
+    async checkPasswordToken(token: string): Promise<{ email: string; id: number }> {
+        let result: { sub: string; token: string };
+        try {
+            result = this.jwt.verify<{ sub: string; token: string }>(token, {
+                secret: appConfig().appSecret,
+                ignoreExpiration: true,
+            });
+        } catch (error) {
+            throw new NotFoundApiError('The email token is not valid');
+        }
+
+        const verification = await this.emailVerificationRepository.findOneBy({
+            token: result.token,
+            type: VerificationType.resetpassword,
+        });
+        if (!verification || !verification.email || verification.email !== result.sub) {
+            throw new NotFoundApiError('The email token is not valid');
+        }
+        if ((new Date().getTime() - verification.createdAt.getTime()) / 60000 >= 1440) {
+            throw new DeprecatedRequestsApiError('The email token is deprecated');
+        }
+
+        return { email: verification.email, id: verification.id };
+    }
+
+    async setPassword({ token, password }: { token: string; password: string }): Promise<boolean> {
+        const { email, id } = await this.checkPasswordToken(token);
+
+        const user = await this.findByEmail(email);
+
+        console.log(user.password);
+        if (user && (await bcrypt.compare(password, user.password))) {
+            throw new ApiError('The password is same old password');
+        }
+
+        if (user) {
+            user.password = password;
+            const savedUser = await user.save();
+            await this.emailVerificationRepository.delete({
+                id: id,
+            });
+            return !!savedUser;
+        }
+        return false;
     }
 }
