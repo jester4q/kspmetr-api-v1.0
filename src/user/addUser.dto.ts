@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, Length, Matches } from 'class-validator';
+import { IsEmail, IsNotEmpty, Length, Matches, Validate } from 'class-validator';
 import { PASSWORD_RULE } from './rules';
 import { UserRoleEnum } from './types';
 import { IsAlreadyRegister } from './isAlreadyRegister.validation';
+import { RoleValidation } from './role.validation';
 
 export class AddUserRequestDto {
     @ApiProperty({
@@ -29,5 +30,6 @@ export class AddUserRequestDto {
         isArray: true,
         enum: UserRoleEnum,
     })
+    @Validate(RoleValidation)
     roles: UserRoleEnum[];
 }

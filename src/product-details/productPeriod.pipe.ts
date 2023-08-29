@@ -1,8 +1,4 @@
-import {
-    PipeTransform,
-    ArgumentMetadata,
-    BadRequestException,
-} from '@nestjs/common';
+import { PipeTransform, ArgumentMetadata, BadRequestException } from '@nestjs/common';
 
 export class ProductPeriodPipe implements PipeTransform {
     transform(value: any, metadata: ArgumentMetadata) {
@@ -19,17 +15,13 @@ export class ProductPeriodPipe implements PipeTransform {
             throw new BadRequestException('Period is not right formt');
         }
 
-        if (period > 365) {
-            throw new BadRequestException('Max period value is 365');
+        if (period > 366) {
+            throw new BadRequestException('Max period value is 366');
         }
         return period;
     }
 
     private isNumeric(value: any) {
-        return (
-            ['string', 'number'].includes(typeof value) &&
-            /^-?\d+$/.test(value) &&
-            isFinite(value)
-        );
+        return ['string', 'number'].includes(typeof value) && /^-?\d+$/.test(value) && isFinite(value);
     }
 }

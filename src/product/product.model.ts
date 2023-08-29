@@ -179,6 +179,7 @@ export class ProductModel implements IProductModel {
     }
 
     public get ratingQuantity(): number | undefined {
+        console.log(this.data.ratingQuantity);
         if (!isNumber(this.data.ratingQuantity)) {
             return undefined;
         }
@@ -310,6 +311,8 @@ export class AddDetailedProductModel extends ProductModel implements IAddDetaile
             errors: null,
             isNotFound: false,
         });
+
+        console.log(data);
     }
 
     isValid(): boolean {

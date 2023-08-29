@@ -51,7 +51,7 @@ export class Product extends BaseEntity {
     @Column()
     status: number;
 
-    @Column()
+    @Column({ type: 'text' })
     failDescription: string;
 
     @Column({ type: 'datetime' })

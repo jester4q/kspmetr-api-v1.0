@@ -27,3 +27,9 @@ export class DeprecatedRequestsApiError extends ApiError {
         return new ForbiddenException(this.message);
     }
 }
+
+export class ForbiddenApiError extends ApiError {
+    toHttpError() {
+        return new ForbiddenException(this.message);
+    }
+}

@@ -53,33 +53,27 @@ export class UserService {
     }
 
     async signup(data: TUserAdd): Promise<User> {
-        const userByEmail = await this.findByEmail(data.email);
-        const userByFingerprint = await this.findByFingerprint(data.fingerprint);
-
         if (data.email) {
+            const userByEmail = await this.findByEmail(data.email);
             if (userByEmail) {
                 throw new ApiError('User with the same email address already exist');
             }
-            if (userByFingerprint && !userByFingerprint.email) {
-                userByFingerprint.email = data.email;
-                userByFingerprint.password = data.password;
-                await userByFingerprint.save();
-                return userByFingerprint;
-            }
+
             const user = await this.add({
                 email: data.email,
-                fingerprint: userByFingerprint ? undefined : data.fingerprint || undefined,
+                fingerprint: '',
                 password: data.password,
-                roles: [UserRoleEnum.chromeExtension],
+                roles: [UserRoleEnum.siteUser],
             });
             return user;
         } else if (data.fingerprint) {
+            const userByFingerprint = await this.findByFingerprint(data.fingerprint);
             if (userByFingerprint) {
                 throw new ApiError('User with the same fingerprint already exist');
             }
             const user = await this.add({
-                email: undefined,
-                password: undefined,
+                email: '',
+                password: '',
                 fingerprint: data.fingerprint,
                 roles: [UserRoleEnum.chromeExtension],
             });
@@ -255,7 +249,6 @@ export class UserService {
 
         const user = await this.findByEmail(email);
 
-        console.log(user.password);
         if (user && (await bcrypt.compare(password, user.password))) {
             throw new ApiError('The password is same old password');
         }
@@ -263,9 +256,15 @@ export class UserService {
         if (user) {
             user.password = password;
             const savedUser = await user.save();
-            await this.emailVerificationRepository.delete({
-                id: id,
-            });
+            if (savedUser) {
+                await this.emailVerificationRepository.delete({
+                    id: id,
+                });
+                const appConf = appConfig();
+                const mailer = new Mailer();
+                const tmp = new Template('password.email.template.html', { URL: appConf.appHttpUrl });
+                await mailer.send(appConf.appEmailAddresser, user.email, 'Пароль изменен', await tmp.build());
+            }
             return !!savedUser;
         }
         return false;

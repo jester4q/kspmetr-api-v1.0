@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsOptional, Length, Matches } from 'class-validator';
+import { IsEmail, IsOptional, Length, Matches, Validate } from 'class-validator';
 import { PASSWORD_RULE } from './rules';
 import { UserRoleEnum } from './types';
 import { IsAlreadyRegister } from './isAlreadyRegister.validation';
 import { ApiContextAwareDto } from '../common/context-aware.dto';
+import { RoleValidation } from './role.validation';
 
 export class UpdateUserRequestDto extends ApiContextAwareDto {
     @ApiProperty({
@@ -31,5 +32,6 @@ export class UpdateUserRequestDto extends ApiContextAwareDto {
         enum: UserRoleEnum,
     })
     @IsOptional()
+    @Validate(RoleValidation)
     roles?: UserRoleEnum[];
 }

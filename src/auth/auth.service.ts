@@ -6,7 +6,8 @@ import { UserService } from 'src/user/user.service';
 import { AuthTokensService } from './token/authToken.service';
 import { AuthSession } from '../common/db/entities';
 
-import { ApiError, NotFoundApiError } from 'src/common/error';
+import { ApiError, ForbiddenApiError, NotFoundApiError } from 'src/common/error';
+import { UserRoleEnum } from 'src/user/types';
 
 @Injectable()
 export class AuthService {
@@ -26,6 +27,10 @@ export class AuthService {
     async loginByEmail(email: string, password: string): Promise<string> {
         const user = await this.userService.findByEmail(email);
 
+        if (user.roles.length == 1 && user.roles.includes(UserRoleEnum.chromeExtension)) {
+            throw new ForbiddenApiError('Login by email is forbidden');
+        }
+
         if (!user) {
             throw new ApiError('The email address or password is incorrect');
         }
@@ -40,6 +45,9 @@ export class AuthService {
         const user = await this.userService.findByFingerprint(fingerprint);
         if (!user) {
             throw new NotFoundApiError('The fingerprint is incorrect');
+        }
+        if (!user.roles.includes(UserRoleEnum.chromeExtension)) {
+            throw new ForbiddenApiError('Login by fingerprint is forbidden');
         }
         const token = await this.tokenService.sign(user);
         return token;

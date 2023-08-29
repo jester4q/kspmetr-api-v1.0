@@ -37,4 +37,7 @@ export class ProductHistory extends BaseEntity {
 
     @Column()
     sessionId: number;
+
+    @Column({ type: 'text' })
+    failDescription: string;
 }

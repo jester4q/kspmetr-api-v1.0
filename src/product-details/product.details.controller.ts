@@ -5,7 +5,7 @@ import { DataTypesEnum, ModeEnum, ProductDetailsService } from './product.detail
 import { ProductUrlPipe } from './productUrl.pipe';
 import { ProductPeriodPipe } from './productPeriod.pipe';
 import { ProductDataTypesPipe } from './productDataTypes.pipe';
-import { NotFoundException } from '@nestjs/common/exceptions';
+import { ForbiddenException, NotFoundException } from '@nestjs/common/exceptions';
 import { ProductModePipe } from './productMode.pipe';
 import { UserRolesGuard } from 'src/user/roles/roles.guard';
 import { ProductDetailsDto } from './product.details.dto';
@@ -13,6 +13,8 @@ import { dateToStr } from 'src/utils';
 import { UserRequestGuard } from 'src/user/user.request.guard';
 import { HasRoles } from 'src/user/roles/roles.decorator';
 import { UserRoleEnum } from 'src/user/types';
+import { SessionUser } from 'src/auth/token/sessionUser.decorator';
+import { TSessionUser } from 'src/auth/token/authToken.service';
 
 @ApiTags('Product')
 @Controller('/api/product-details')
@@ -24,7 +26,7 @@ export class ProductDetailsController {
     constructor(private productService: ProductDetailsService) {}
 
     @Get('?')
-    @HasRoles(UserRoleEnum.siteUser, UserRoleEnum.chromeExtension)
+    @HasRoles(UserRoleEnum.siteUser, UserRoleEnum.chromeExtension, UserRoleEnum.premiumUser)
     @UseGuards(UserRequestGuard)
     @ApiCreatedResponse({
         description: 'Return information about product by url or code',
@@ -58,6 +60,8 @@ export class ProductDetailsController {
         example: ModeEnum.dates,
     })
     async getProductInfo(
+        @SessionUser()
+        user: TSessionUser,
         @Query('q', new ProductUrlPipe())
         productCode: string,
         @Query('period', new ProductPeriodPipe())
@@ -70,6 +74,12 @@ export class ProductDetailsController {
         const product = await this.productService.fetchOne(productCode);
         if (!product || !product.lastCheckedAt) {
             throw new NotFoundException(`Product is not found by code ${productCode}`);
+        }
+
+        if (!user.roles.includes(UserRoleEnum.premiumUser)) {
+            if (types.length > 1 || types[0] !== DataTypesEnum.prices) {
+                throw new ForbiddenException(`Access to this data types is forbiden`);
+            }
         }
 
         const stat = await (mode === ModeEnum.values ? this.productService.fetchStatByValues(product.id, period, types) : this.productService.fetchStatByDates(product.id, period, types));

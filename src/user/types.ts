@@ -17,6 +17,7 @@ export enum UserRoleEnum {
     parser = 'parser',
     chromeExtension = 'chrome_ext',
     siteUser = 'site_user',
+    premiumUser = 'premium_user',
 }
 
 export enum VerificationType {

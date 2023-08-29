@@ -129,6 +129,7 @@ export class UserController {
         description: 'Culd not update user data',
     })
     async patchUser(@Param('id') id: number, @Body() req: UpdateUserRequestDto): Promise<UserResultDto> {
+        console.log(req);
         const updatedUser = await this.userService.update(id, req);
         return this.mapUserToDto(updatedUser);
     }
