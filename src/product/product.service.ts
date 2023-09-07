@@ -158,7 +158,6 @@ export class ProductService {
             sessionId: session.sessionId,
             failDescription: source.hasErrors ? source.getErrorMessage : null,
         };
-        console.log(source.hasReviewsError, source.ratingQuantity);
         if (!source.hasReviewsError) {
             //const { rating, quantity } = await this.saveReviews(session, source, productId);
             if (source.rating !== undefined) {

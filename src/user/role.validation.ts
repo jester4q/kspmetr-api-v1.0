@@ -6,7 +6,6 @@ import { ValidatorConstraint, ValidatorConstraintInterface } from 'class-validat
 @Injectable()
 export class RoleValidation implements ValidatorConstraintInterface {
     validate(value: string[]): boolean {
-        console.log(value);
         if (!Array.isArray(value)) {
             throw new BadRequestException('Roles is not right format');
         }
