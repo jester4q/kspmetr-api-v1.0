@@ -8,10 +8,10 @@ import { TCategoryName, TCategoryPath } from 'src/product/product.types';
 import { ApiError } from '../common/error';
 
 function isSameUrl(a: string, b: string) {
-    const url1 = a.split('?')[0];
-    const url2 = b.split('?')[0];
+    //const url1 = a.split('?')[0];
+    //const url2 = b.split('?')[0];
 
-    return url1 == url2;
+    return a.toLocaleLowerCase() == b.toLowerCase();
 }
 @Injectable()
 export class CategoryService {
