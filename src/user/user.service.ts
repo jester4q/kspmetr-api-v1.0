@@ -187,7 +187,7 @@ export class UserService {
             );
 
             const mailer = new Mailer();
-            const tmp = new Template('varify.email.template.html', { VERIFYURL: appConf.appHttpUrl + 'auth/email/verify/' + token, URL: appConf.appHttpUrl });
+            const tmp = new Template('varify.email.template.html', { VERIFYURL: 'https://account.skymetric.kz/verify/' + token, URL: appConf.appHttpUrl });
 
             return mailer.send(appConf.appEmailAddresser, user.email, 'Подтверждение почты', await tmp.build());
         }
@@ -212,7 +212,7 @@ export class UserService {
             );
 
             const mailer = new Mailer();
-            const tmp = new Template('reset.email.template.html', { RESETURL: appConf.appHttpUrl + 'auth/reset-password/' + token, URL: appConf.appHttpUrl });
+            const tmp = new Template('reset.email.template.html', { RESETURL: 'https://account.skymetric.kz/reset-password/' + token, URL: appConf.appHttpUrl });
 
             return mailer.send(appConf.appEmailAddresser, user.email, 'Сброс пароля', await tmp.build());
         }
