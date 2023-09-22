@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TCategoryProduct, TProduct } from './product.types';
 import { Logger } from '../common/log/logger';
@@ -52,32 +52,33 @@ export class ProductService {
         return (product && this.toProduct(product)) || null;
     }
 
-    public async fetchAllInCategory(categoryIds: number[], depth: number = 0, reverse: boolean = false): Promise<TCategoryProduct[]> {
-        let bulder = await this.productRepository
-            .createQueryBuilder()
-            .where('`Product`.categoryId in (:...ids)', {
-                ids: categoryIds,
-            })
-            .andWhere('(`Product`.status=1 OR `Product`.attempt < 4)')
-            .andWhere('`Product`.lastCheckedAt IS NOT NULL');
-        if (depth > 0) {
-            bulder.andWhere('`Product`.position > 0 AND `Product`.position <= ' + depth);
+    public async fetchAllInCategory(categoryIds: number[], depth: number = 0, reverse: boolean = false, excludeCheckedToday: boolean = false): Promise<TCategoryProduct[]> {
+        let builder = this.createFetchQueryBuilder(categoryIds, depth);
+        builder.andWhere('`Product`.lastCheckedAt IS NOT NULL');
+        if (excludeCheckedToday) {
+            builder.andWhere('DATE(`Product`.lastCheckedAt) < CURDATE()');
         }
-        bulder.orderBy('`Product`.lastCheckedAt', reverse ? 'DESC' : 'ASC');
-        const products1 = await bulder.getMany();
-        bulder = this.productRepository
-            .createQueryBuilder()
-            .where('`Product`.categoryId in (:...ids)', {
-                ids: categoryIds,
-            })
-            .andWhere('(`Product`.status=1 OR `Product`.attempt < 4)')
-            .andWhere('`Product`.lastCheckedAt IS NULL');
-        if (depth > 0) {
-            bulder.andWhere('`Product`.position > 0 AND `Product`.position <= ' + depth);
-        }
-        bulder.orderBy('`Product`.id', reverse ? 'DESC' : 'ASC');
-        const products2 = await bulder.getMany();
+        builder.orderBy('`Product`.lastCheckedAt', reverse ? 'DESC' : 'ASC');
+        const products1 = await builder.getMany();
+        builder = this.createFetchQueryBuilder(categoryIds, depth);
+        builder.andWhere('`Product`.lastCheckedAt IS NULL');
+        builder.orderBy('`Product`.id', reverse ? 'DESC' : 'ASC');
+        const products2 = await builder.getMany();
         return (reverse ? [...products2, ...products1] : [...products1, ...products2]).map((item) => this.toCategoryProduct(item));
+    }
+
+    private createFetchQueryBuilder(categoryIds: number[], depth: number = 0, excludeCheckedToday: boolean = false): SelectQueryBuilder<Product> {
+        const builder = this.productRepository.createQueryBuilder();
+        builder
+            .where('`Product`.categoryId in (:...ids)', {
+                ids: categoryIds,
+            })
+            .andWhere('(`Product`.status=1 OR `Product`.attempt < 4)');
+        if (depth > 0) {
+            builder.andWhere('`Product`.position > 0 AND `Product`.position <= ' + depth);
+        }
+
+        return builder;
     }
 
     public async addAndUpdate(session: TSessionUser, model: IAddDetailedProductModel) {

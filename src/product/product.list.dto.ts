@@ -21,6 +21,13 @@ export class GetCategoryProductsQueryDto {
     reverse: boolean;
 
     @ApiProperty({
+        description: 'Exclude products checked today',
+    })
+    @IsOptional()
+    @Transform(({ value }) => value == '1' || value == 'true' || value === true)
+    excludeCheckedToday: boolean;
+
+    @ApiProperty({
         description: 'Depth of position in each category',
     })
     @IsOptional()
