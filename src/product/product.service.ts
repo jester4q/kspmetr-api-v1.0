@@ -126,6 +126,9 @@ export class ProductService {
             });
         }
         product.lastSeeAt = new Date();
+        if (source.collectingId) {
+            product.collectingId = source.collectingId;
+        }
         await product.save();
         return this.toProduct(product);
     }

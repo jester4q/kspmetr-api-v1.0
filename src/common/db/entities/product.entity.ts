@@ -71,4 +71,7 @@ export class Product extends BaseEntity {
 
     @Column()
     position: number;
+
+    @Column()
+    collectingId: number;
 }

@@ -18,6 +18,8 @@ export interface IAddProductModel {
 
     position: number;
 
+    collectingId?: number;
+
     isValid(): boolean;
 }
 
@@ -296,6 +298,16 @@ export class AddProductModel implements IAddProductModel {
             this.data.position = parseInt(this.data.position);
         }
         return this.data.position;
+    }
+
+    public get collectingId(): number {
+        if (!isNumber(this.data.collectingId)) {
+            return undefined;
+        }
+        if (typeof this.data.position === 'string') {
+            this.data.collectingId = parseInt(this.data.collectingId);
+        }
+        return this.data.collectingId;
     }
 }
 

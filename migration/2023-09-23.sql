@@ -1,0 +1,1 @@
+ALTER TABLE `products` ADD `collectingId` INT UNSIGNED NOT NULL DEFAULT '0' AFTER `categories`;
