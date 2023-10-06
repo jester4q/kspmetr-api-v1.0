@@ -113,7 +113,16 @@ export class ProductService {
 
             product.categories = source.cartegoryPath || product.categories;
             product.categoryId = source.categoryId || product.categoryId;
-            product.position = source.position || product.position || 0;
+            if (source.position > 0) {
+                let position = source.position;
+                console.log('check product position ', product.position, source.position, source.collectingId, product.collectingId);
+                if (product.position > 0 && source.collectingId == product.collectingId) {
+                    console.log('check product same session', source.collectingId);
+                    position = Math.min(product.position, position);
+                }
+                product.position = position;
+                console.log('result product position ', position);
+            }
         } else {
             product = this.productRepository.create({
                 code: source.code,

@@ -75,6 +75,10 @@ export class ProductDetailsController {
         if (!product || !product.lastCheckedAt) {
             throw new NotFoundException(`Product is not found by code ${productCode}`);
         }
+        const hasHistory = await this.productService.hasHistoryInPast(product.id);
+        if (!hasHistory) {
+            throw new NotFoundException(`Product is not found by code ${productCode}`);
+        }
 
         if (!user.roles.includes(UserRoleEnum.premiumUser)) {
             if (types.length > 1 || types[0] !== DataTypesEnum.prices) {

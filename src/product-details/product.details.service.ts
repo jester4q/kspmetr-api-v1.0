@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Between, Repository } from 'typeorm';
+import { Between, LessThan, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from '../common/db/entities/product.entity';
 import { ProductHistory } from '../common/db/entities/productHistory.entity';
@@ -44,6 +44,15 @@ export class ProductDetailsService {
             code: code,
         });
         return product;
+    }
+
+    public async hasHistoryInPast(productId: number): Promise<boolean> {
+        const today = new Date();
+        today.setHours(0);
+        today.setMinutes(0);
+        today.setSeconds(0);
+        const some = await this.historyRepository.findOne({ where: { productId: productId, createdAt: LessThan(today) } });
+        return !!some;
     }
 
     public async fetchStatByDates(productId: number, period: number, types: DataTypesEnum[]): Promise<TProductStat> {
