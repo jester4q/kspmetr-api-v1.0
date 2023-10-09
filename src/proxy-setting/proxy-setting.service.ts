@@ -13,28 +13,22 @@ export class ProxySettingService {
         private userAgentRepository: Repository<UserAgent>,
     ) {}
 
-    public async fetchAll(): Promise<TProxySetting[]> {
-        const proxies: ProxySetting[] = await this.proxyRepository
-            .createQueryBuilder()
-            .select('*')
-            .where({
-                status: 1,
-            })
-            .orderBy('RAND()')
-            .execute();
+    public async fetchAll(section: number = 0): Promise<TProxySetting[]> {
+        const where: any = {
+            status: 1,
+        };
+        if (section > 0) {
+            where.section = section;
+        }
+        const proxies: ProxySetting[] = await this.proxyRepository.createQueryBuilder().select('*').where(where).orderBy('RAND()').execute();
         if (!proxies.length) {
             return [];
         }
 
-        const agents: UserAgent[] = await this.userAgentRepository
-            .createQueryBuilder()
-            .select('*')
-            .orderBy('RAND()')
-            .execute();
+        const agents: UserAgent[] = await this.userAgentRepository.createQueryBuilder().select('*').orderBy('RAND()').execute();
 
         return proxies.map((item: ProxySetting, i: number) => {
-            const agent =
-                (agents.length > 0 && agents[i % agents.length]) || null;
+            const agent = (agents.length > 0 && agents[i % agents.length]) || null;
             return this.toProxySetting(item, agent);
         });
     }
@@ -56,10 +50,7 @@ export class ProxySettingService {
         return proxy.affected > 0;
     }
 
-    protected toProxySetting(
-        proxy: ProxySetting,
-        agent: UserAgent | null,
-    ): TProxySetting {
+    protected toProxySetting(proxy: ProxySetting, agent: UserAgent | null): TProxySetting {
         return {
             id: proxy.id,
             agent: (agent && agent.value) || '',

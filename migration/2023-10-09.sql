@@ -1,0 +1,1 @@
+ALTER TABLE `proxy` ADD `section` TINYINT UNSIGNED NOT NULL DEFAULT '0' AFTER `id`, ADD INDEX (`section`);

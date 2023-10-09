@@ -26,7 +26,7 @@ export class ProductRequestService {
             .create({
                 code: code,
                 url: url,
-                sessionId: user.sessionId,
+                sessionId: (user && user.sessionId) || 0,
                 status: fail ? 0 : 1,
                 errorDescription: fail,
             })

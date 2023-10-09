@@ -5,6 +5,9 @@ export class ProxySetting extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column()
+    section: number;
+
     @Column({ length: 16 })
     ip: string;
 
