@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Logger } from '../common/log/logger';
 import { TCategory } from './category.types';
 import { Category } from '../common/db/entities';
-import { TCategoryName, TCategoryPath } from 'src/product/product.types';
+import { TCategoryName, TCategoryPath, TCategoryUrls } from 'src/product/product.types';
 import { ApiError } from '../common/error';
 
 function isSameUrl(a: string, b: string) {
@@ -109,8 +109,13 @@ export class CategoryService {
         return !failed;
     }
 
-    public async addPath(path: TCategoryName): Promise<TCategoryPath> {
-        const way = [path.level1, path.level2, path.level3, path.level4, path.level5, path.level6].filter((x) => x && x.length > 0);
+    public async addPath(path: TCategoryName, urls?: TCategoryUrls): Promise<TCategoryPath> {
+        const treePath = new Array(6).fill(null, 0, 6);
+        for (let i = 0; i < 6; i++) {
+            const lvName = 'level' + (i + 1);
+            treePath[i] = path[lvName] && path[lvName].length ? { name: path[lvName], url: urls && urls[lvName] } : null;
+        }
+        const way = treePath.filter((x) => !!x);
         const result: TCategoryPath = { level1: 0, level2: 0 };
         const queryRunner = this.dataSource.createQueryRunner();
         try {
@@ -133,11 +138,15 @@ export class CategoryService {
         return result;
     }
 
-    protected async addCategory(level: number, name: string, parentId: number, runner: QueryRunner): Promise<Category> {
-        let cat = await this.categoryRepository.createQueryBuilder().where('`Category`.name like :name', { name: name }).andWhere('level = :n', { n: level }).getOne();
+    protected async addCategory(level: number, name: { name: string; url: string }, parentId: number, runner: QueryRunner): Promise<Category> {
+        let cat = await this.categoryRepository.createQueryBuilder().where('`Category`.name like :name', { name: name.name }).andWhere('level = :n', { n: level }).getOne();
 
         if (cat) {
             if (cat.parentCategoryId == parentId && cat.level === level) {
+                if (name.url && !cat.url) {
+                    cat.url = name.url;
+                    await runner.manager.save(cat);
+                }
                 return cat;
             }
 
@@ -145,9 +154,9 @@ export class CategoryService {
         }
         cat = this.categoryRepository.create({
             parentCategoryId: parentId,
-            name: name,
+            name: name.name,
             level: level,
-            url: '',
+            url: name.url || '',
             status: 1,
         });
         await runner.manager.save(cat);

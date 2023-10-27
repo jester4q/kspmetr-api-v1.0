@@ -86,7 +86,7 @@ export class ProductService {
             throw new ApiError('Culd not add/update product by this data');
         }
 
-        const categoryPath = await this.categoryService.addPath(model.categoryName);
+        const categoryPath = await this.categoryService.addPath(model.categoryName, model.categoryUrls);
         model.setCategories(categoryPath);
         const product = await this.productRepository.findOneBy({
             code: model.code,

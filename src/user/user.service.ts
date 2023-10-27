@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { EmailVerification, User } from '../common/db/entities';
+import { Any, In, Repository } from 'typeorm';
+import { EmailVerification, User, UserLimits } from '../common/db/entities';
 import { TUserAdd, TUserUpdate, UserRoleEnum, VerificationType } from './types';
 import { Mailer } from '../common/mailer/mailer';
 import { ApiError, DeprecatedRequestsApiError, ManyRequestsApiError, NotFoundApiError } from 'src/common/error';
@@ -19,6 +19,8 @@ export class UserService {
         private userRepository: Repository<User>,
         @InjectRepository(EmailVerification)
         private emailVerificationRepository: Repository<EmailVerification>,
+        @InjectRepository(UserLimits)
+        private userLimitsRepository: Repository<UserLimits>,
         private jwt: JwtService,
     ) {}
 
@@ -111,6 +113,16 @@ export class UserService {
             user.banned = date;
             await user.save();
         }
+    }
+
+    async getRoleLimit(roles: UserRoleEnum[], query: string): Promise<number> {
+        console.log('-----------', roles, query);
+        const limits = await this.userLimitsRepository.findBy({ role: In(roles), query: query });
+        console.log('+++++', limits);
+        if (!limits.length || limits.find((l) => l.value === -1)) {
+            return -1;
+        }
+        return limits.reduce((r, l) => Math.max(l.value, r), 0);
     }
 
     async createEmailToken(user: User, type: VerificationType): Promise<boolean> {

@@ -5,8 +5,7 @@ import { TSessionUser } from 'src/auth/token/authToken.service';
 import { User } from '../common/db/entities';
 import { TrackingService } from '../tracking/tracking.service';
 import { UserService } from 'src/user/user.service';
-
-import limitsConfig from '../common/config/limits.config';
+import { UserRoleEnum } from './types';
 
 const POST_PRODUCT_QUERY = 'POST /api/products/detailed';
 const GET_PRODUCT_DETAILS_QUERY = 'GET /api/product-details';
@@ -51,13 +50,13 @@ export class UserRequestGuard implements CanActivate {
             throw new ForbiddenException('Too Many requests');
         }
         let count = await this.logService.countRequestForMinute(user.id, query, 10);
-        if (count > 200) {
+        if (count >= 200) {
             await this.userService.ban(user.id, 10);
             throw new ForbiddenException('Too Many requests');
         }
 
         count = await this.logService.countRequestForDay(user.id, query, 1);
-        if (count > 10000) {
+        if (count >= 10000) {
             await this.userService.ban(user.id, 24 * 60);
             throw new ForbiddenException('Too Many requests');
         }
@@ -75,12 +74,17 @@ export class UserRequestGuard implements CanActivate {
             throw new ForbiddenException('Too Many requests for last hour');
         }
         */
-        const limits = limitsConfig();
-        if (limits.requestsPerDay >= 0) {
+        const limit = await this.getLimit(user.roles, query);
+
+        if (limit >= 0) {
             count = await this.logService.countRequestForDay(user.id, query, 1);
-            if (count > limits.requestsPerDay) {
-                throw new ForbiddenException('Too Many requests for last 24 hours');
+            if (count >= limit) {
+                throw new ForbiddenException('Too many requests today');
             }
         }
+    }
+
+    private async getLimit(role: UserRoleEnum[], query: string): Promise<number> {
+        return this.userService.getRoleLimit(role, query);
     }
 }

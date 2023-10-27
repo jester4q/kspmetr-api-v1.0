@@ -1,6 +1,6 @@
 import { AddDetailedProductRequestDTO } from './add.detailed.product.dto';
 import { AddProductRequestDTO } from './add.product.dto';
-import { TCategoryName, TCategoryPath, TProductImage, TProductSeller, TProductSpecification } from './product.types';
+import { TCategoryName, TCategoryPath, TCategoryUrls, TProductImage, TProductSeller, TProductSpecification } from './product.types';
 import { SaveProductRequestDTO } from './save.product.dto';
 import { ProductCategoryPathDto } from './product.dto';
 import { isNumber, isArray, isString } from '../utils';
@@ -79,6 +79,8 @@ export interface IAddDetailedProductModel extends IAddProductModel, IProductMode
     setCategories(path: TCategoryPath): void;
 
     categoryName: TCategoryName;
+
+    categoryUrls: TCategoryUrls;
 
     isValid(): boolean;
 }
@@ -355,6 +357,10 @@ export class AddDetailedProductModel extends ProductModel implements IAddDetaile
 
     public get categoryName(): TCategoryName {
         return this.data.categoryName || undefined;
+    }
+
+    public get categoryUrls(): TCategoryUrls {
+        return this.data.categoryUrls || undefined;
     }
 
     public get position(): number {

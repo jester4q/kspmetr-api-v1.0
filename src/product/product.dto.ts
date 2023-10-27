@@ -188,6 +188,39 @@ export class ProductCategoryNameDto {
     level6?: string;
 }
 
+export class ProductCategoryUrlsDto {
+    @ApiProperty({
+        description: 'Level 1 category url',
+        required: false,
+    })
+    level1?: string;
+    @ApiProperty({
+        description: 'Level 2 category url',
+        required: false,
+    })
+    level2?: string;
+    @ApiProperty({
+        description: 'Level 3 category url',
+        required: false,
+    })
+    level3?: string;
+    @ApiProperty({
+        description: 'Level 4 category url',
+        required: false,
+    })
+    level4?: string;
+    @ApiProperty({
+        description: 'Level 5 category url',
+        required: false,
+    })
+    level5?: string;
+    @ApiProperty({
+        description: 'Level 6 category url',
+        required: false,
+    })
+    level6?: string;
+}
+
 export class ProductSellerDTO {
     @ApiProperty({
         description: 'Product seller name',

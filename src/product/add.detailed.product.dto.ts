@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ProductCategoryNameDto, ProductImageDto, ProductSellerDTO, ProductSpecificationDto } from './product.dto';
+import { ProductCategoryNameDto, ProductCategoryUrlsDto, ProductImageDto, ProductSellerDTO, ProductSpecificationDto } from './product.dto';
 import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Matches, Validate } from 'class-validator';
 import { GalleryImageValidation, isValidProductImageDto } from './galleryImages.validation';
 import { ProductUrlValidation } from './url.validation';
@@ -9,6 +9,7 @@ import { SellersValidation, isValidProductSellerDto } from './sellers.validation
 import { Transform } from 'class-transformer';
 import { isNumber, isString } from 'src/utils';
 import { IsNumberOrString } from './numberOrString.validator';
+import { CategoryUrlsValidation } from './categoryUrls.validation';
 
 export class AddDetailedProductRequestDTO {
     @ApiProperty({
@@ -39,6 +40,14 @@ export class AddDetailedProductRequestDTO {
     })
     @Validate(CategoryNameValidation)
     categoryName: ProductCategoryNameDto;
+
+    @ApiProperty({
+        description: 'Product category urls',
+        type: ProductCategoryNameDto,
+    })
+    @IsOptional()
+    @Validate(CategoryUrlsValidation)
+    categoryUrls: ProductCategoryUrlsDto;
 
     @ApiProperty({
         description: 'Product unit price',
