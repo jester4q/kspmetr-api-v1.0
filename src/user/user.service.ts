@@ -116,9 +116,7 @@ export class UserService {
     }
 
     async getRoleLimit(roles: UserRoleEnum[], query: string): Promise<number> {
-        console.log('-----------', roles, query);
         const limits = await this.userLimitsRepository.findBy({ role: In(roles), query: query });
-        console.log('+++++', limits);
         if (!limits.length || limits.find((l) => l.value === -1)) {
             return -1;
         }
@@ -200,8 +198,8 @@ export class UserService {
 
             const mailer = new Mailer();
             const tmp = new Template('varify.email.template.html', { VERIFYURL: 'https://account.skymetric.kz/verify/' + token, URL: appConf.appHttpUrl });
-
-            return mailer.send(appConf.appEmailAddresser, user.email, 'Подтверждение почты', await tmp.build());
+            const mail = await tmp.build();
+            return mailer.send(appConf.appEmailAddresser, user.email, 'Подтверждение почты', mail);
         }
         throw new ApiError('User is not registered by email: ' + user.email);
     }
@@ -225,8 +223,8 @@ export class UserService {
 
             const mailer = new Mailer();
             const tmp = new Template('reset.email.template.html', { RESETURL: 'https://account.skymetric.kz/reset-password/' + token, URL: appConf.appHttpUrl });
-
-            return mailer.send(appConf.appEmailAddresser, user.email, 'Сброс пароля', await tmp.build());
+            const mail = await tmp.build();
+            return mailer.send(appConf.appEmailAddresser, user.email, 'Сброс пароля', mail);
         }
         throw new ApiError('User dont have request to reset password by email: ' + user.email);
     }
