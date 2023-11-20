@@ -13,6 +13,9 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 
 import dbConfig from './common/config/db.config';
+import { TarifModule } from './tarif/tarif.module';
+import { PaymentModule } from './payment/payment.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
     imports: [
@@ -23,6 +26,7 @@ import dbConfig from './common/config/db.config';
         ServeStaticModule.forRoot({
             rootPath: join(__dirname, '..', 'public'),
         }),
+        ScheduleModule.forRoot(),
         AuthModule,
         UserModule,
         ProxySettingModule,
@@ -30,6 +34,8 @@ import dbConfig from './common/config/db.config';
         ProductModule,
         TrackingModule,
         ProductDetailsModule,
+        TarifModule,
+        PaymentModule,
     ],
 })
 export class AppModule implements NestModule {

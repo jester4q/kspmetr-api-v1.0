@@ -50,7 +50,7 @@ export class ProductDetailsController {
         name: 'data_type',
         description: 'Set of data typees',
         required: true,
-        example: [DataTypesEnum.prices, DataTypesEnum.rating, DataTypesEnum.reviews, DataTypesEnum.sellers],
+        example: [DataTypesEnum.prices, DataTypesEnum.rating, DataTypesEnum.reviews, DataTypesEnum.sellers, DataTypesEnum.ratingсount],
     })
     @ApiQuery({
         enum: ModeEnum,

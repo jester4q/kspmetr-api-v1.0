@@ -11,3 +11,5 @@ export { Log } from './log.entity';
 export { ProductRequest } from './productRequest.entity';
 export { EmailVerification } from './emailVerification.entity';
 export { UserLimits } from './userLimits.entiy';
+export { Tarif } from './tarif.entity';
+export { Payment } from './payment.entity';
