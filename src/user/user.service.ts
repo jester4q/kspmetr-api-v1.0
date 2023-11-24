@@ -12,6 +12,9 @@ import * as bcrypt from 'bcrypt';
 
 import appConfig from '../common/config/app.config';
 
+const EXPIRED_IN = 1 * 24 * 60; // mins
+const TOKEN_EXPIRED_IN = '1d';
+
 @Injectable()
 export class UserService {
     constructor(
@@ -150,7 +153,6 @@ export class UserService {
         try {
             result = this.jwt.verify<{ sub: string; token: string }>(token, {
                 secret: appConfig().appSecret,
-                ignoreExpiration: true,
             });
         } catch (error) {
             throw new NotFoundApiError('The email token is not valid');
@@ -162,7 +164,7 @@ export class UserService {
         if (!verification || !verification.email || verification.email !== result.sub) {
             throw new NotFoundApiError('The email token is not valid');
         }
-        if ((new Date().getTime() - verification.createdAt.getTime()) / 60000 >= 1440) {
+        if ((new Date().getTime() - verification.createdAt.getTime()) / 60000 >= EXPIRED_IN) {
             throw new DeprecatedRequestsApiError('The email token is deprecated');
         }
 
@@ -193,7 +195,7 @@ export class UserService {
                     sub: verification.email,
                     token: verification.token,
                 },
-                { secret: appConfig().appSecret },
+                { secret: appConfig().appSecret, expiresIn: TOKEN_EXPIRED_IN },
             );
 
             const mailer = new Mailer();
@@ -218,7 +220,7 @@ export class UserService {
                     sub: verification.email,
                     token: verification.token,
                 },
-                { secret: appConfig().appSecret },
+                { secret: appConfig().appSecret, expiresIn: TOKEN_EXPIRED_IN },
             );
 
             const mailer = new Mailer();
@@ -234,7 +236,6 @@ export class UserService {
         try {
             result = this.jwt.verify<{ sub: string; token: string }>(token, {
                 secret: appConfig().appSecret,
-                ignoreExpiration: true,
             });
         } catch (error) {
             throw new NotFoundApiError('The email token is not valid');
@@ -247,7 +248,7 @@ export class UserService {
         if (!verification || !verification.email || verification.email !== result.sub) {
             throw new NotFoundApiError('The email token is not valid');
         }
-        if ((new Date().getTime() - verification.createdAt.getTime()) / 60000 >= 1440) {
+        if ((new Date().getTime() - verification.createdAt.getTime()) / 60000 >= EXPIRED_IN) {
             throw new DeprecatedRequestsApiError('The email token is deprecated');
         }
 

@@ -7,6 +7,9 @@ import appConfig from '../../common/config/app.config';
 import { UserRoleEnum } from '../../user/types';
 import { AuthSession, User } from '../../common/db/entities';
 
+const EXPIRED_IN = 3 * 24 * 60; // mins
+const TOKEN_EXPIRED_IN = '3d';
+
 export type TSessionUser = {
     userId: number;
     sessionId: number;
@@ -34,7 +37,7 @@ export class AuthTokensService {
                 userId: user.id,
                 roles: user.roles,
             },
-            { secret: appConfig().appSecret },
+            { secret: appConfig().appSecret, expiresIn: TOKEN_EXPIRED_IN },
         );
         session.token = token;
         await session.save();
@@ -53,7 +56,7 @@ export class AuthTokensService {
             where: { id: result.sub, active: true },
         });
 
-        if (session && session.token == token && session.expiredAt.getTime() >= new Date().getTime()) {
+        if (session && session.token == token && (new Date().getTime() - session.createdAt.getTime()) / 60000 <= EXPIRED_IN) {
             const user = await this.userRepository.findOneBy({
                 id: session.userId,
             });
@@ -74,7 +77,7 @@ export class AuthTokensService {
 
     private async createSession(userId: number): Promise<AuthSession> {
         const date = new Date();
-        date.setMonth(date.getMonth() + 1);
+        date.setDate(date.getDate() + 3);
         const session = this.sessionRepository.create({
             userId: userId,
             token: '',

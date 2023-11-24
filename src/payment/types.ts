@@ -8,8 +8,10 @@ export type TPayment = {
 
 export type TAddPayment = {
     tarifId: number;
+    /*
     name?: string;
     amount?: number;
+    */
 };
 
 export enum PaymentStatusEnum {

@@ -36,6 +36,7 @@ export class AddPaymentRequestDTO {
     @IsNotEmpty()
     tarifId: number;
 
+    /*
     @ApiProperty({
         description: 'Tarif name for payment',
     })
@@ -49,4 +50,5 @@ export class AddPaymentRequestDTO {
     @IsOptional()
     @Validate(IsNumberOrString)
     amount: number;
+    */
 }

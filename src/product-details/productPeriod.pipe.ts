@@ -15,9 +15,6 @@ export class ProductPeriodPipe implements PipeTransform {
             throw new BadRequestException('Period is not right formt');
         }
 
-        if (period > 366) {
-            throw new BadRequestException('Max period value is 366');
-        }
         return period;
     }
 

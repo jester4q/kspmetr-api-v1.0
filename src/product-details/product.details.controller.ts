@@ -5,7 +5,7 @@ import { DataTypesEnum, ModeEnum, ProductDetailsService } from './product.detail
 import { ProductUrlPipe } from './productUrl.pipe';
 import { ProductPeriodPipe } from './productPeriod.pipe';
 import { ProductDataTypesPipe } from './productDataTypes.pipe';
-import { ForbiddenException, NotFoundException } from '@nestjs/common/exceptions';
+import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common/exceptions';
 import { ProductModePipe } from './productMode.pipe';
 import { UserRolesGuard } from 'src/user/roles/roles.guard';
 import { ProductDetailsDto } from './product.details.dto';
@@ -71,13 +71,21 @@ export class ProductDetailsController {
         @Query('mode', new ProductModePipe())
         mode?: ModeEnum,
     ): Promise<ProductDetailsDto> {
+        const isPremiumRole = user.roles.includes(UserRoleEnum.premiumUser);
+        const isSiteRole = user.roles.includes(UserRoleEnum.siteUser);
+        if (!(isPremiumRole || isSiteRole) && period > 95) {
+            throw new BadRequestException('Max period value is 95');
+        }
+        if (period > 190) {
+            throw new BadRequestException('Max period value is 190');
+        }
         const product = await this.productService.fetchOne(productCode);
         if (!product || !product.lastCheckedAt) {
-            throw new NotFoundException(`Product is not found by code ${productCode}`);
+            throw new NotFoundException(`Product 1 is not found by code ${productCode}`);
         }
         const hasHistory = await this.productService.hasHistoryInPast(product.id);
         if (!hasHistory) {
-            throw new NotFoundException(`Product is not found by code ${productCode}`);
+            throw new NotFoundException(`Product 2 is not found by code ${productCode}`);
         }
 
         if (!user.roles.includes(UserRoleEnum.premiumUser)) {

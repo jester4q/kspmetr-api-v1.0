@@ -50,8 +50,8 @@ export class PaymentService {
         const payment = this.paymentRepository.create({
             userId: session.userId,
             createdAt: new Date(),
-            name: data.name || tarif.name,
-            amount: data.amount || tarif.price,
+            name: tarif.name,
+            amount: tarif.price,
             tarifId: tarif.id,
             status: PaymentStatusEnum.wait,
         });
